@@ -1,0 +1,20 @@
+body {
+	width: 700px;
+}
+
+#loading {
+	display: none;
+	width: 700px;
+	text-align: center;
+	margin-top: 200px;
+}
+
+#bd_chart {
+	display: none;
+	width:700px;
+	height:500px;
+}
+
+#mstone {
+	text-align: right;
+}

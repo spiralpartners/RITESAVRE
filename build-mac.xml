@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<project name="mac">
+<!--
+    tomcat のインストールディレクトリを指定する．
+    この2つの部分のみを変更すればOK．
+-->
+	<property name="dest.dir" value="../temmogidest" />
+    <property name="tomcat.dir" value="/usr/local/share/java/tomcat" />
+    <property name="logging.file" value="/tmp/tem%u.log" />
+</project>

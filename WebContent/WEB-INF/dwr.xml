@@ -1,0 +1,41 @@
+<!DOCTYPE dwr PUBLIC
+    "-//GetAhead Limited//DTD Direct Web Remoting 3.0//EN"
+    "http://directwebremoting.org/schema/dwr30.dtd">
+<!--
+UC:一般ユーザを追加する
+
+UC:ログアウトする
+LogoutControllerを追加
+
+UC:ログインする
+無関係なコントローラを削除
+ -->
+<dwr>
+  <allow>
+
+		<create creator="new">
+			<param name="class" value="jp.enpit.cloud.ritesavre.controller.DisplayTeamComponentInfoController" />
+		</create>
+		<create creator="new">
+			<param name="class" value="jp.enpit.cloud.ritesavre.controller.BurnDownChartController" />
+		</create>
+		<create creator="new">
+			<param name="class" value="jp.enpit.cloud.ritesavre.controller.DisplayEstimationAccuracyController" />
+		</create>
+		<create creator="new">
+			<param name="class" value="jp.enpit.cloud.ritesavre.controller.RegisterMilestoneInfoController" />
+		</create>
+		<create creator="new">
+			<param name="class" value="jp.enpit.cloud.ritesavre.controller.DisplayAssignmentListController" />
+		</create>
+		<create creator="new">
+			<param name="class" value="jp.enpit.cloud.ritesavre.controller.DisplayFluentdLogAnalysisController" />
+		</create>
+		<convert converter="bean" match="jp.enpit.cloud.ritesavre.view.*" />
+
+		<!-- 例外をDWRへ投げるための設定 -->
+		<convert match="java.lang.Exception" converter="exception" />
+		<convert match="java.lang.StackTraceElement" converter="bean"/>
+
+	</allow>
+</dwr>

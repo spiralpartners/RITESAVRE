@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>スプリントバーンダウンチャート</title>
+
+	<link rel="stylesheet" type="text/css" href="css/default.css" />
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+	<script type='text/javascript' src='dwr/engine.js'></script>
+	<script type='text/javascript' src='dwr/interface/BurnDownChartController.js'></script>
+	<script type='text/javascript' src='dwr/interface/DisplayAssignmentListController.js'></script>
+
+	<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+</head>
+
+
+<body>
+	<div id="mstone">
+		<select id="mstone_menu">
+			<option value="">- milestone -</option>
+		</select>
+	</div>
+    <div id="bd_chart"></div>
+	<div id="loading"><img src="images/loading.gif"/></div>
+
+
+
+	<script type='text/javascript'>
+
+	// プロジェクト名を定数化
+	var project = 'trac_apple';
+	//var project = 'trac_EventSpiral';
+	var a;
+
+
+	function drawChart(project, milestone) {
+		if (milestone == '') {
+			return;
+		}
+		var form = {project:project, milestone:milestone};
+
+		$("#loading").show();
+		$("#bd_chart").hide();
+		BurnDownChartController.execute(form, {
+			callback: function(bdc_data) {
+				var chart_data = createBdcData(bdc_data);
+
+				var chart = new google.visualization.ScatterChart(document.getElementById('bd_chart'));
+				var options = {
+					title : 'バーンダウンチャート：' + milestone,
+					width : 800,
+					height : 500,
+					hAxis : {title : '時間'},
+					vAxis : {title : '工数（分）'},
+					lineWidth : 1,
+					legend : '',
+					//isHtml : true,
+				};
+				chart.draw(chart_data, options);
+
+				$("#loading").fadeOut(function(){
+					$("#bd_chart").show();
+				});
+			},
+			exceptionHandler: updateErrorMsg
+		})
+	};
+
+	function createBdcData(bdc_data) {
+		var data = new google.visualization.DataTable();
+		data.addColumn('datetime', 'Date');
+		data.addColumn('number', '理想');
+		data.addColumn('number', '実績');
+		data.addRow([bdc_data.idealBeginPoint.elapsedTime, bdc_data.idealBeginPoint.estimatedEffort, null]);
+		data.addRow([bdc_data.idealEndPoint.elapsedTime,   bdc_data.idealEndPoint.estimatedEffort,   null]);
+		for (var i=0; i<bdc_data.actualPoints.length; i++) {
+			data.addRow([bdc_data.actualPoints[i].elapsedTime, null, bdc_data.actualPoints[i].estimatedEffort]);
+		}
+		return data;
+	};
+
+	function dateFormat(d) {
+		return d.getHours() + '時' + d.getMinutes() + '分';
+	};
+
+	google.load("visualization", "1", {packages:["corechart"]});
+	//google.setOnLoadCallback(drawChart);
+
+
+	// エラーメッセージの更新
+	function updateErrorMsg(msg, exc) {
+		$('#error_msg').text(msg);
+	};
+
+	function createMilestoneList() {
+		BurnDownChartController.listMilestones(project, {
+			callback: function(data) {
+				var buff = $('#mstone_menu').html();
+				for (var i=0; i<data.length; i++) {
+					buff += '<option value="' + data[i] + '">' + data[i] + '</option>';
+				}
+				$('#mstone_menu').html(buff);
+			},
+			exceptionHandler: updateErrorMsg
+		})
+	};
+
+	$('#mstone_menu').change(function() {
+		milestone = $(this).val();
+		drawChart(project, milestone);
+		stopTimer();
+		startTimer();
+	});
+
+	$(function() {
+		createMilestoneList();
+	});
+
+
+
+	//const REFRESH_INTERVAL = 10*60*1000; //10分間隔でグラフ更新
+	const REFRESH_INTERVAL = 1*60*1000; //1分間隔でグラフ更新
+	const CHECK_INTERVAL = 1000;         //毎秒チェック
+	var refreshTimer;
+
+	function startTimer() {
+		var prev_updated = new Date();
+		refreshTimer = setInterval(function(){
+			var remain_ms = REFRESH_INTERVAL - (new Date() - prev_updated);
+			var milestone = $('#mstone_menu option:selected').val();
+			if (remain_ms < 0) {
+				prev_updated = new Date();
+				drawChart(project, milestone);
+			}
+			else if (remain_ms < 60*1000) {
+				label = Math.floor(remain_ms/1000) + '秒';
+			} else {
+				label = Math.floor(remain_ms/(60*1000) + 1) + '分';
+			}
+//console.log(remain_ms/1000);
+
+			$('svg g text:first').text('バーンダウンチャート：' + milestone + ' （次回更新まで残り' + label + '）');
+		}, CHECK_INTERVAL);
+	};
+
+	function stopTimer() {
+		clearInterval(refreshTimer);
+	};
+	</script>
+</body>
+
+</html>

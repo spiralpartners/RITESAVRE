@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<project name="commons">
+    <!-- 環境変数の取込み -->
+    <property environment="env" />
+
+    <!-- パスの設定 -->
+    <property name="src.dir" value="src" />
+    <property name="src.web.dir" value="WebContent" />
+    <property name="src.test.dir" value="testcase" />
+
+    <!--<property name="dest.dir" value="dest" />-->
+    <property name="dest.class.dir" value="${dest.dir}/classes" />
+    <property name="dest.test.dir" value="${dest.dir}/test-classes" />
+	
+    <property name="dest.report.dir" value="reports" />
+    <property name="dest.report.test.dir" value="${dest.report.dir}/test" />
+    <property name="dest.report.jacoco.dir" value="${dest.report.dir}/jacoco" />
+    <property name="dest.javadoc.dir" value="${dest.report.dir}/javadoc" />
+
+    <property name="lib.compile.dir"  value="${src.web.dir}/WEB-INF/lib" />
+    <!--<property name="lib.provided.dir" value="lib/provided" />-->
+    <property name="lib.test.dir"     value="lib/test" />
+	<property name="lib.tool.dir"     value="lib/tool" />
+
+    <!-- ベースとなるCLASSPATH -->
+    <path id="base.classpath">
+      <fileset dir="${lib.compile.dir}"  includes="*.jar" />
+      <!--<fileset dir="${lib.provided.dir}" includes="*.jar" />-->
+      <fileset dir="${tomcat.dir}/lib"   includes="*.jar" />
+    </path>
+
+    <path id="test.classpath">
+      <path refid="base.classpath" />
+      <pathelement location="${dest.class.dir}" />
+      <fileset dir="${lib.test.dir}" includes="*.jar" />
+    </path>
+
+    <!-- リソースファイルのパターン -->
+    <patternset id="resource">
+        <include name="**/*.properties" />
+        <include name="**/*.txt" />
+    </patternset>
+
+</project>

@@ -1,0 +1,24 @@
+<web-app>
+  <servlet>
+    <servlet-name>dwr-invoker</servlet-name>
+    <servlet-class>
+      org.directwebremoting.servlet.DwrServlet
+    </servlet-class>
+    <init-param>
+      <param-name>debug</param-name>
+      <param-value>true</param-value>
+    </init-param>
+  </servlet>
+  <servlet>
+    <servlet-name>initialize</servlet-name>
+    <servlet-class>jp.enpit.cloud.ritesavre.util.InitializeServlet</servlet-class>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>dwr-invoker</servlet-name>
+    <url-pattern>/dwr/*</url-pattern>
+  </servlet-mapping>
+
+</web-app>
+

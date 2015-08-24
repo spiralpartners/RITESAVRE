@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-beanutils-1.8.3.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/dwr.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/hibernate-validator-4.3.1.Final.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mongo-2.10.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/validation-api-1.0.0.GA.jar"/>
+	<classpathentry kind="lib" path="C:/tomcat/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="lib/test/junit-4.11.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/jboss-logging-3.1.0.CR2.jar"/>
+	<classpathentry kind="src" path="testcase"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/mysql-connector-java-5.1.25-bin.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

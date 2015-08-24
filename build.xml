@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<project xmlns:jacoco="antlib:org.jacoco.ant" name="RITESAVRE3" default="deploy-without-test" basedir=".">
+	<condition property="build-properties" value="build-windows.xml">
+		<os family="windows" />
+	</condition>
+	<condition property="build-properties" value="build-mac.xml">
+		<os family="mac" />
+	</condition>
+	<condition property="build-properties" value="build-unix.xml">
+		<os family="unix" />
+	</condition>
+	<import file="${build-properties}" />
+	<import file="build-common.xml" />
+
+	<target name="clean" description="クリーンアップ">
+		<delete dir="${dest.dir}" />
+		<!--
+            <delete dir="${tomcat.dir}\webapps\MongodbLoginTrial.war" />
+            <delete dir="${tomcat.dir}\webapps\MongodbLoginTrial" />
+        -->
+	</target>
+
+	<target name="prepare">
+		<mkdir dir="${dest.dir}" />
+		<mkdir dir="${dest.class.dir}" />
+		<mkdir dir="${dest.report.dir}" />
+	</target>
+
+	<target name="compile-main" depends="prepare">
+		<!-- リソースのコピー -->
+		<copy todir="${dest.class.dir}">
+			<fileset dir="${src.dir}">
+				<patternset refid="resource" />
+			</fileset>
+			<filterset>
+				<filter token="LOG_FILE" value="${logging.file}" />
+			</filterset>
+		</copy>
+
+		<javac destdir="${dest.class.dir}" debug="on" debuglevel="lines,vars,source"
+               optimize="off" deprecation="on" encoding="utf-8"
+               includeAntRuntime="off">
+			<src path="${src.dir}" />
+			<classpath refid="base.classpath" />
+		</javac>
+	</target>
+
+	<target name="compile-test" depends="compile-main">
+		<mkdir dir="${dest.test.dir}" />
+		<copy todir="${dest.test.dir}">
+			<fileset dir="${src.test.dir}">
+				<patternset refid="resource" />
+			</fileset>
+		</copy>
+
+		<javac destdir="${dest.test.dir}" debug="on" debuglevel="lines,vars,source"
+               optimize="off" deprecation="on" encoding="utf-8"
+               includeAntRuntime="off">
+			<src path="${src.test.dir}" />
+			<classpath refid="test.classpath" />
+		</javac>
+	</target>
+
+	<!-- jacocoの設定 -->
+	<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
+		<classpath path="${lib.tool.dir}/jacoco-0.6.2-20130117.231724-7/lib/jacocoant.jar"/>
+	</taskdef>
+
+	<target name="exec-test" depends="compile-test" description="テスト実行">
+		<mkdir dir="${dest.report.test.dir}" />
+		<mkdir dir="${dest.report.jacoco.dir}" />
+		<jacoco:coverage>
+			<junit fork="on" forkmode="once" printsummary="withOutAndErr" haltonerror="no" haltonfailure="no">
+				<classpath location="${dest.test.dir}" />
+				<classpath refid="test.classpath" />
+
+				<batchtest todir="${dest.report.test.dir}" fork="yes">
+					<fileset dir="${dest.test.dir}" includes="**/*Test.class" />
+				</batchtest>
+				<formatter type="xml" />
+			</junit>
+		</jacoco:coverage>
+
+		<junitreport todir="${dest.report.test.dir}">
+			<fileset dir="${dest.report.test.dir}">
+				<include name="TEST-*.xml"/>
+			</fileset>
+		</junitreport>
+
+	</target>
+
+	<target name="coverage-report" depends="exec-test">
+		<!--  Step 3: Create coverage report  -->
+		<jacoco:report>
+			<!--
+	 This task needs the collected execution data and ...
+	-->
+			<executiondata>
+				<file file="jacoco.exec"/>
+			</executiondata>
+			<!--  the class files and optional source files ...  -->
+			<structure name="TEM Coverage by JaCoCo">
+				<classfiles>
+					<fileset dir="${dest.class.dir}"/>
+				</classfiles>
+				<sourcefiles encoding="UTF-8">
+					<fileset dir="${src.dir}"/>
+				</sourcefiles>
+			</structure>
+			<!--  to produce reports in different formats.  -->
+			<html destdir="${dest.report.jacoco.dir}"/>
+			<!--<csv destfile="${result.report.dir}/report.csv"/>
+	<xml destfile="${result.report.dir}/report.xml"/>-->
+		</jacoco:report>
+		<delete file="jacoco.exec" />
+	</target>
+
+	<target name="build-webapps" description="WARファイルの作成" depends="compile-main">
+		<war destfile="${dest.dir}/${ant.project.name}.war" update="true"
+             duplicate="preserve" webxml="${src.web.dir}/WEB-INF/web.xml">
+			<classes dir="${dest.class.dir}" />
+			<lib file="${lib.compile.dir}/*.jar" />
+			<fileset dir="${src.web.dir}" excludes="**/web.xml,WEB-INF/lib/**" />
+		</war>
+	</target>
+
+	<!-- 今のところ不使用 -->
+	<target name="release" depends="clean, build-webapps"
+            description="リリースモジュールの作成">
+		<zip destfile="${dest.dir}/${ant.project.name}.zip">
+			<fileset file="${dest.dir}/${ant.project.name}.war" />
+			<!--<zipfileset dir="${dest.javadoc.dir}" prefix="javadoc"/> -->
+		</zip>
+
+		<!--
+        <copy file="${dest.dir}/${ant.project.name}.war"
+            tofile="${tomcat.dir}\webapps\${ant.project.name}.war" />
+        -->
+	</target>
+
+	<!-- Configure properties to access the Manager application -->
+	<property name="url"      value="http://localhost:8080/manager/text"/>
+	<property name="username" value="tomcat"/>
+	<property name="password" value="spiral"/>
+
+	<path id="catalina-ant-classpath">
+		<!-- We need the Catalina jars for Tomcat -->
+		<fileset dir="${tomcat.dir}/lib">
+			<include name="catalina-ant.jar"/>
+			<include name="tomcat-coyote.jar"/>
+			<include name="tomcat-util.jar"/>
+		</fileset>
+		<fileset dir="${tomcat.dir}\\bin">
+			<include name="tomcat-juli.jar"/>
+		</fileset>
+	</path>
+
+	<!-- Configure the custom Ant tasks for the Manager application -->
+	<taskdef name="start" classname="org.apache.catalina.ant.StartTask">
+		<classpath refid="catalina-ant-classpath" />
+	</taskdef>
+	<taskdef name="stop" classname="org.apache.catalina.ant.StopTask">
+		<classpath refid="catalina-ant-classpath" />
+	</taskdef>
+	<taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask">
+		<classpath refid="catalina-ant-classpath" />
+	</taskdef>
+	<taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask">
+		<classpath refid="catalina-ant-classpath" />
+	</taskdef>
+	<taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask">
+		<classpath refid="catalina-ant-classpath" />
+	</taskdef>
+
+	<target name="deploy" description="Install web application"
+            depends="clean,build-webapps,coverage-report">
+		<deploy url="${url}" username="${username}" password="${password}"
+                path="/${ant.project.name}" update="true"
+                war="${dest.dir}/${ant.project.name}.war"/>
+	</target>
+
+	<target name="deploy-without-test" description="Install web application without test"
+            depends="clean,build-webapps">
+		<deploy url="${url}" username="${username}" password="${password}"
+                path="/${ant.project.name}" update="true"
+                war="${dest.dir}/${ant.project.name}.war"/>
+	</target>
+
+	<!-- warファイルがあるかどうかをチェック -->
+	<condition property="have.temwar">
+		<available file="${tomcat.dir}\webapps\${ant.project.name}.war" />
+	</condition>
+
+	<target name="reload" description="Reload web application"
+            depends="build-webapps" if="have.temwar">
+		<reload url="${url}" username="${username}" password="${password}"
+                path="/${ant.project.name}"/>
+	</target>
+
+	<target name="undeploy" description="Remove web application">
+		<undeploy url="${url}" username="${username}" password="${password}"
+                  path="/${ant.project.name}"/>
+	</target>
+
+	<target name="stop" description="Remove web application">
+		<undeploy url="${url}" username="${username}" password="${password}"
+                  path="/${ant.project.name}"/>
+	</target>
+</project>
