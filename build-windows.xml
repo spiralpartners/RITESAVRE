@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
 <project name="windows">
-	<property name="dest.dir" value="C:\\dest\\" />
-	<property name="tomcat.dir" value="C:\\tomcat\\" />
+    <property name="tomcat.dir" value="C:\\tomcat\\" />
+	<property name="tomcat.url"      value="http://localhost:8080/manager/text"/>
     <property name="logging.file" value="C:/tomcat/logs/tem%u.log" />
-	<!--<property name="logging.file" value="/share/log/tomcat6/tem%u.log" />-->
 </project>

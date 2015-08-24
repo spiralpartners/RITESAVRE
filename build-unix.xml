@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
-<project name="mac">
+<project name="unix">
 <!--
     tomcat のインストールディレクトリを指定する．
     この2つの部分のみを変更すればOK．
 -->
-	<property name="dest.dir" value="dest" />
     <property name="tomcat.dir" value="/usr/local/tomcat" />
-    <property name="logging.file" value="/usr/local/tomcat/logs/ritesavre%u.log" />
+	<property name="tomcat.url"  value="http://localhost:8080/manager/text"/>
+	<property name="logging.file" value="/usr/local/tomcat/logs/tem%u.log" />
 </project>

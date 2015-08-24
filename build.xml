@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
-<project xmlns:jacoco="antlib:org.jacoco.ant" name="RITESAVRE3" default="deploy-without-test" basedir=".">
+<project xmlns:jacoco="antlib:org.jacoco.ant" name="EventSpiral" default="deploy" basedir=".">
 	<condition property="build-properties" value="build-windows.xml">
 		<os family="windows" />
 	</condition>
@@ -15,10 +15,6 @@
 
 	<target name="clean" description="クリーンアップ">
 		<delete dir="${dest.dir}" />
-		<!--
-            <delete dir="${tomcat.dir}\webapps\MongodbLoginTrial.war" />
-            <delete dir="${tomcat.dir}\webapps\MongodbLoginTrial" />
-        -->
 	</target>
 
 	<target name="prepare">
@@ -64,16 +60,18 @@
 
 	<!-- jacocoの設定 -->
 	<taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml">
-		<classpath path="${lib.tool.dir}/jacoco-0.6.2-20130117.231724-7/lib/jacocoant.jar"/>
+		<classpath path="${lib.tool.dir}/jacoco-0.7.5.201505241946/lib/jacocoant.jar"/>
 	</taskdef>
 
 	<target name="exec-test" depends="compile-test" description="テスト実行">
 		<mkdir dir="${dest.report.test.dir}" />
 		<mkdir dir="${dest.report.jacoco.dir}" />
 		<jacoco:coverage>
-			<junit fork="on" forkmode="once" printsummary="withOutAndErr" haltonerror="no" haltonfailure="no">
+			<junit fork="on" forkmode="once" printsummary="withOutAndErr"
+				haltonerror="no" haltonfailure="no">
 				<classpath location="${dest.test.dir}" />
 				<classpath refid="test.classpath" />
+				<jvmarg value="-Dfile.encoding=UTF-8"/>
 
 				<batchtest todir="${dest.report.test.dir}" fork="yes">
 					<fileset dir="${dest.test.dir}" includes="**/*Test.class" />
@@ -93,14 +91,12 @@
 	<target name="coverage-report" depends="exec-test">
 		<!--  Step 3: Create coverage report  -->
 		<jacoco:report>
-			<!--
-	 This task needs the collected execution data and ...
-	-->
+			<!-- This task needs the collected execution data 	-->
 			<executiondata>
 				<file file="jacoco.exec"/>
 			</executiondata>
 			<!--  the class files and optional source files ...  -->
-			<structure name="TEM Coverage by JaCoCo">
+			<structure name="Event Spiral Coverage by JaCoCo">
 				<classfiles>
 					<fileset dir="${dest.class.dir}"/>
 				</classfiles>
@@ -140,7 +136,6 @@
 	</target>
 
 	<!-- Configure properties to access the Manager application -->
-	<property name="url"      value="http://localhost:8080/manager/text"/>
 	<property name="username" value="tomcat"/>
 	<property name="password" value="spiral"/>
 
@@ -174,37 +169,59 @@
 	</taskdef>
 
 	<target name="deploy" description="Install web application"
-            depends="clean,build-webapps,coverage-report">
-		<deploy url="${url}" username="${username}" password="${password}"
-                path="/${ant.project.name}" update="true"
-                war="${dest.dir}/${ant.project.name}.war"/>
-	</target>
-
-	<target name="deploy-without-test" description="Install web application without test"
             depends="clean,build-webapps">
-		<deploy url="${url}" username="${username}" password="${password}"
+		<deploy url="${tomcat.url}" username="${username}" password="${password}"
                 path="/${ant.project.name}" update="true"
                 war="${dest.dir}/${ant.project.name}.war"/>
 	</target>
 
-	<!-- warファイルがあるかどうかをチェック -->
-	<condition property="have.temwar">
+	<target name="deploy-with-test" description="Install web application with test"
+            depends="clean,build-webapps,coverage-report">
+		<deploy url="${tomcat.url}" username="${username}" password="${password}"
+                path="/${ant.project.name}" update="true"
+                war="${dest.dir}/${ant.project.name}.war"/>
+	</target>
+
+		<!-- warファイルがあるかどうかをチェック -->
+	<condition property="have.eswar">
 		<available file="${tomcat.dir}\webapps\${ant.project.name}.war" />
 	</condition>
 
 	<target name="reload" description="Reload web application"
-            depends="build-webapps" if="have.temwar">
-		<reload url="${url}" username="${username}" password="${password}"
+            depends="build-webapps" if="have.eswar">
+		<reload url="${tomcat.url}" username="${username}" password="${password}"
                 path="/${ant.project.name}"/>
 	</target>
 
 	<target name="undeploy" description="Remove web application">
-		<undeploy url="${url}" username="${username}" password="${password}"
+		<undeploy url="${tomcat.url}" username="${username}" password="${password}"
                   path="/${ant.project.name}"/>
 	</target>
 
 	<target name="stop" description="Remove web application">
-		<undeploy url="${url}" username="${username}" password="${password}"
+		<undeploy url="${tomcat.url}" username="${username}" password="${password}"
                   path="/${ant.project.name}"/>
+	</target>
+
+        <target name="javadoc" description="Create javadoc" depends="compile-main">
+		<mkdir dir="${dest.temp.dir}" />
+		<mkdir dir="${dest.javadoc.dir}" />
+
+		<javadoc destdir="${dest.temp.dir}"
+		         encoding="utf-8"
+		         source="1.8"
+		         private="true"
+		         docencoding="utf-8"
+		         additionalparam="-J-Dfile.encoding=UTF-8"
+		         charset="utf-8">
+			<sourcepath path="${src.dir}" />
+			<classpath refid="base.classpath" />
+		</javadoc>
+
+                <native2ascii encoding="utf-8"
+                              reverse="true"
+                              src="${dest.temp.dir}"
+                              dest="${dest.javadoc.dir}" />
+                <delete dir="${dest.temp.dir}" />
 	</target>
 </project>

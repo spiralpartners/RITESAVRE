@@ -9,24 +9,23 @@
     <property name="src.web.dir" value="WebContent" />
     <property name="src.test.dir" value="testcase" />
 
-    <!--<property name="dest.dir" value="dest" />-->
+    <property name="dest.dir" value="dest" />
     <property name="dest.class.dir" value="${dest.dir}/classes" />
     <property name="dest.test.dir" value="${dest.dir}/test-classes" />
-	
-    <property name="dest.report.dir" value="reports" />
+    <property name="dest.temp.dir" value="${dest.dir}/temp" />
+
+    <property name="dest.report.dir" value="${dest.dir}/reports" />
     <property name="dest.report.test.dir" value="${dest.report.dir}/test" />
     <property name="dest.report.jacoco.dir" value="${dest.report.dir}/jacoco" />
-    <property name="dest.javadoc.dir" value="${dest.report.dir}/javadoc" />
+    <property name="dest.javadoc.dir" value="${dest.dir}/javadoc" />
 
     <property name="lib.compile.dir"  value="${src.web.dir}/WEB-INF/lib" />
-    <!--<property name="lib.provided.dir" value="lib/provided" />-->
     <property name="lib.test.dir"     value="lib/test" />
 	<property name="lib.tool.dir"     value="lib/tool" />
 
     <!-- ベースとなるCLASSPATH -->
     <path id="base.classpath">
       <fileset dir="${lib.compile.dir}"  includes="*.jar" />
-      <!--<fileset dir="${lib.provided.dir}" includes="*.jar" />-->
       <fileset dir="${tomcat.dir}/lib"   includes="*.jar" />
     </path>
 

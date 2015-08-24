@@ -5,7 +5,7 @@
     tomcat のインストールディレクトリを指定する．
     この2つの部分のみを変更すればOK．
 -->
-	<property name="dest.dir" value="../temmogidest" />
     <property name="tomcat.dir" value="/usr/local/share/java/tomcat" />
+	<property name="tomcat.url"      value="http://localhost:8080/manager/text"/>
     <property name="logging.file" value="/tmp/tem%u.log" />
 </project>
