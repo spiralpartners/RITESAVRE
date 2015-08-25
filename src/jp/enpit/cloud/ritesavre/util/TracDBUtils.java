@@ -16,9 +16,9 @@ public class TracDBUtils {
 		Connection con = null;
 		try {
 			Class.forName(driver);
-			con = DriverManager.getConnection("jdbc:mysql://localhost/" + project, TracDBUser, TracDBPass);
+			//con = DriverManager.getConnection("jdbc:mysql://localhost/" + project, TracDBUser, TracDBPass);
 			//con = DriverManager.getConnection("jdbc:mysql://133.1.236.131:13306/" + project, TracDBUser, TracDBPass);
-			//con = DriverManager.getConnection("jdbc:mysql://10.1.11.62:33060/" + project, TracDBUser, TracDBPass);
+			con = DriverManager.getConnection("jdbc:mysql://10.1.0.67:33060/" + project, TracDBUser, TracDBPass);
 		} catch (ClassNotFoundException e) {
 		}
 		return con;
