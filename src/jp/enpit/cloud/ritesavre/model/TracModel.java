@@ -518,10 +518,72 @@ public class TracModel {
 		}
 	}
 
+
 	/**
 	 *
 	 * @param milestone
-	 * @param start 始点時刻に10分 * n足したもの
+	 * @param start 始点時刻
+	 * @param end 終点時刻
+	 * @return
+	 * @throws SQLException
+	 * tracではmilestoneを完了する際に、未完了のチケットを別のmilestoneに移行することができるが、それが行われると
+	 * チケットがどのマイルストーンからどのマイルストーンに移行したかという履歴情報が記録されない
+	 */
+	public int getRemainedTaskEfforts(String milestone, long start) throws SQLException {
+		logger.info("TracModel.getRemainedTaskEffort");
+		int effort = 0;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		//System.out.println("start:" + start);
+		//System.out.println("end:" + end);
+		try {
+			//stmt = conn.prepareStatement("select SUM(value) from (select DISTINCT ticket.id, ticket_custom.value from ticket LEFT JOIN ticket_change on ticket.id=ticket_change.ticket LEFT JOIN ticket_custom on ticket.id=ticket_custom.ticket where milestone = ? and ticket.time <= ? and ((resolution IS NULL and status != 'closed') or (resolution = 'fixed' and status = 'closed' and ticket_change.field='status' and newvalue='closed' and ticket_change.time > ?)) and ticket_custom.name='estimatedhours') as dTicket");
+			/*			stmt = conn.prepareStatement("select SUM(value) from (select DISTINCT ticket.id, ticket_custom.value from ticket " +
+			"LEFT JOIN ticket_change on ticket.id=ticket_change.ticket LEFT JOIN ticket_custom on ticket.id=ticket_custom.ticket " +
+			"where ((milestone=? and ((resolution IS NULL and status != 'closed') or " +
+			"(resolution = 'fixed' and status = 'closed' and ticket_change.field='status' and newvalue='closed' " +
+			"and ticket_change.time > ?))) or (ticket_change.time > ? and field='milestone' and oldvalue=? " +
+			"and ((resolution = 'fixed' and status = 'closed') or (resolution IS NULL and status != 'closed')))) " +
+			"and ticket.time <= ? and ticket_custom.name='estimatedhours') as dTicket");
+			 */
+			stmt = conn.prepareStatement("select SUM(value) from ticket_custom where name = 'estimatedhours' and ticket IN "
+					+ "(select DISTINCT ticket.id from ticket LEFT JOIN ticket_change on ticket.id = ticket_change.ticket "
+					+ "LEFT JOIN ticket_custom on ticket.id = ticket_custom.ticket "
+					+ "where ((status != 'closed') or ((resolution = 'fixed') and (ticket_custom.name = 'enddate' and ticket_custom.value >= ? ))) "
+					+ "and (milestone= ?));");
+			//stmt.setLong(2, start);
+			//stmt.setLong(1, end - 10 * 60 * 1000 * 1000);
+			stmt.setLong(1, start);
+			stmt.setString(2, milestone);
+			//stmt.setString(3, milestone);
+			rs = stmt.executeQuery();
+			if (rs.next()) {
+				effort = rs.getInt("SUM(value)");
+			}
+			return effort;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException e) {
+			}
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException e) {
+			}
+		}
+	}
+
+	/**
+	 * @deprecated
+	 * @param milestone
+	 * @param start 始点時刻
 	 * @param end 終点時刻
 	 * @return
 	 * @throws SQLException
@@ -576,4 +638,6 @@ public class TracModel {
 			}
 		}
 	}
+
+
 }

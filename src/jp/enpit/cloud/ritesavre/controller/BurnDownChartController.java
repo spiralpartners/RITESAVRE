@@ -61,6 +61,7 @@ public class BurnDownChartController {
 			if(start == 0){
 				start = trac.getStartTime(msf.getMilestone());
 			}
+			//開発者の数と開始・終了時刻で理想線を引く
 			int seffort = trac.getDefaultInitialTaskEffort(msf.getMilestone(), start, member);
 			PointEntity s = new PointEntity(seffort, start);
 			bdc_entity.setIdealBeginPoint(s);
@@ -68,7 +69,7 @@ public class BurnDownChartController {
 			PointEntity e = new PointEntity(0, end);
 			bdc_entity.setIdealEndPoint(e);
 
-			bdc_entity.addActualPoints(s);//実績値の切片追加
+			//bdc_entity.addActualPoints(s);//実績値の切片追加->理想値の切片が変わったので変更
 			Date now = new Date();
 			if (now.getTime() * 1000 < end) {
 				end = now.getTime() * 1000;
@@ -78,13 +79,14 @@ public class BurnDownChartController {
 			}
 			//System.out.println(start + ":" + end);
 			//10分毎にplot
-			for (long t = start + 10 * 60 * 1000 * 1000; t < end; t += 10 * 60 * 1000 * 1000) {
+			for (long t = start; t < end; t += 10 * 60 * 1000 * 1000) {
 				logger.info("t = " + t + ", end = " + end);
-				int reffort = trac.getRemainedTaskEffort(msf.getMilestone(), t, end);
+				//int reffort = trac.getRemainedTaskEffort(msf.getMilestone(), t, end);
+				int reffort = trac.getRemainedTaskEfforts(msf.getMilestone(), t);
 				PointEntity r = new PointEntity(reffort, t);
 				bdc_entity.addActualPoints(r);
 			}
-			int lasteffort = trac.getRemainedTaskEffort(msf.getMilestone(), end, end);
+			int lasteffort = trac.getRemainedTaskEfforts(msf.getMilestone(), end);
 			PointEntity last = new PointEntity(lasteffort, end);
 			bdc_entity.addActualPoints(last);
 
