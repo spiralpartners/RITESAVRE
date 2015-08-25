@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 
-<project xmlns:jacoco="antlib:org.jacoco.ant" name="EventSpiral" default="deploy" basedir=".">
+<project xmlns:jacoco="antlib:org.jacoco.ant" name="RITESAVRE" default="deploy" basedir=".">
 	<condition property="build-properties" value="build-windows.xml">
 		<os family="windows" />
 	</condition>
@@ -151,7 +151,7 @@
 		</fileset>
 	</path>
 
-	<!-- Configure the custom Ant tasks for the Manager application -->
+	<!-- Configure the custom Ant tasks for the Manager application-->
 	<taskdef name="start" classname="org.apache.catalina.ant.StartTask">
 		<classpath refid="catalina-ant-classpath" />
 	</taskdef>
