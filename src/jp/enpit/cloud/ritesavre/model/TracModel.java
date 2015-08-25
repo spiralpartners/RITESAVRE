@@ -360,6 +360,8 @@ public class TracModel {
 		}
 	}
 
+	/**@deprecated
+	 * */
 	public long getStartTime(String milestone) throws SQLException {
 		logger.info("TracModel.getStartTime");
 		long start = 0;
@@ -438,6 +440,8 @@ public class TracModel {
 	}
 
 
+	/**@deprecated
+	 * */
 	public int getDefaultInitialTaskEffort(String milestone, long start,  int member) throws SQLException{
 		long due =0;
 		due = this.getEndTime(milestone);
@@ -489,6 +493,8 @@ public class TracModel {
 
 	}
 
+	/**@deprecated
+	 * */
 	public long getEndTime(String milestone) throws SQLException {
 		logger.info("TracModel.getEndTime");
 		long end = 0;
@@ -520,10 +526,9 @@ public class TracModel {
 
 
 	/**
-	 *
+	 * @deprecated
 	 * @param milestone
 	 * @param start 始点時刻
-	 * @param end 終点時刻
 	 * @return
 	 * @throws SQLException
 	 * tracではmilestoneを完了する際に、未完了のチケットを別のmilestoneに移行することができるが、それが行われると

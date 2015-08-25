@@ -15,4 +15,19 @@ public class TracDaoTest {
 
 	}
 
+	@Test
+	public void testGetRemainedTaskEfforts(){
+		TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory("trac_EventSpiral"));
+		ChartInput ci = new ChartInput();
+		ci.setMilestone("Sprint1st");
+		long t = 1439800200000000L;
+		ci.setStart(t);
+
+		int lasteffort = tDao.getRemainedTaskEfforts(ci);
+
+		System.out.println("effort:" + lasteffort);
+
+
+	}
+
 }

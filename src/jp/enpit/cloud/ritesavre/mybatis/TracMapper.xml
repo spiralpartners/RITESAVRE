@@ -15,4 +15,12 @@
         select due from milestone where name = #{milestone};
     </select>
 
+    <!-- selectoneで呼び出す場合，selectステートメントは1つの値あるいはnullを返す．そのため，resultTypeをオブジェクトにしておかないとNull-poが発生することがある -->
+    <select id="getRemainedTaskEfforts" parameterType="jp.enpit.cloud.ritesavre.model.ChartInput" resultType="java.lang.Integer">
+		select SUM(value) from ticket_custom where name = 'estimatedhours' and ticket IN
+		(select DISTINCT ticket.id from ticket LEFT JOIN ticket_change on ticket.id = ticket_change.ticket
+		LEFT JOIN ticket_custom on ticket.id = ticket_custom.ticket
+		where ((status != 'closed') or ((resolution = 'fixed') and (ticket_custom.name = 'enddate' and ticket_custom.value >= #{start} )))
+		and (milestone= #{milestone}));    </select>
+
 </mapper>

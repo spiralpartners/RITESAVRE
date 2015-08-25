@@ -20,7 +20,7 @@ public class TracDao {
 		SqlSession session = sqlSessionFactory.openSession();
 
 		try{
-		start = session.selectOne("Trac.getStartTime",milestone);
+			start = session.selectOne("Trac.getStartTime",milestone);
 		}finally{
 			session.close();
 		}
@@ -36,7 +36,7 @@ public class TracDao {
 		SqlSession session = sqlSessionFactory.openSession();
 
 		try{
-		end = session.selectOne("Trac.getEndTime",milestone);
+			end = session.selectOne("Trac.getEndTime",milestone);
 		}finally{
 			session.close();
 		}
@@ -45,6 +45,31 @@ public class TracDao {
 		return end;
 
 	}
+	public int getDefaultInitialTaskEffort(String milestone, long start,  int member){
+		long due =0;
+		due = this.getEndTime(milestone);
 
+		//calc default initial effort
+		return (int) (member * (due-start)/(60*1000*1000));
+	}
+
+	public int getRemainedTaskEfforts(ChartInput ci){
+		logger.info("TracDao.getRemainedTaskEfforts");
+		logger.info(ci.toString());
+		//int rtEfforts = 0;
+		Integer rtEfforts;
+		SqlSession session = sqlSessionFactory.openSession();
+
+		try{
+			rtEfforts = session.selectOne("Trac.getRemainedTaskEfforts",ci);
+		}finally{
+			session.close();
+		}
+		if(rtEfforts == null){
+			return 0;
+		}else{
+			return rtEfforts.intValue();
+		}
+	}
 
 }
