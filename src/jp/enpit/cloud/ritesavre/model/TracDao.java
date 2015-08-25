@@ -16,6 +16,11 @@ public class TracDao {
 		this.sqlSessionFactory = sqlSessionFactory;
 	}
 
+	/**
+	 * そのマイルストーンで一番最初にacceptされた時刻を取得する
+	 * @param milestone
+	 * @return
+	 */
 	public long getStartTime(String milestone){
 		logger.info("TracDao.getStartTime");
 		long start = 0;
@@ -32,6 +37,11 @@ public class TracDao {
 
 	}
 
+	/**
+	 * milestoneに設定されたdueタイムを取得する
+	 * @param milestone
+	 * @return
+	 */
 	public long getEndTime(String milestone){
 		logger.info("TracDao.getEndTime");
 		long end = 0;
@@ -47,6 +57,14 @@ public class TracDao {
 		return end;
 
 	}
+
+	/**
+	 * 開始時刻とメンバー数から初期残工数を計算する．DBにはアクセスしない．
+	 * @param milestone
+	 * @param start
+	 * @param member
+	 * @return
+	 */
 	public int getDefaultInitialTaskEffort(String milestone, long start,  int member){
 		long due =0;
 		due = this.getEndTime(milestone);
@@ -55,6 +73,11 @@ public class TracDao {
 		return (int) (member * (due-start)/(60*1000*1000));
 	}
 
+	/**
+	 * 対象マイルストーンの指定された時刻の時点で未終了の全チケットの見積時間を返す
+	 * @param ci
+	 * @return
+	 */
 	public int getRemainedTaskEfforts(ChartInput ci){
 		logger.info("TracDao.getRemainedTaskEfforts");
 		Integer rtEfforts;
