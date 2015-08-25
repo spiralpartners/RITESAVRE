@@ -8,7 +8,7 @@
       <transactionManager type="JDBC"/>
       <dataSource type="POOLED">
         <property name="driver" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="${url}"/>
+        <property name="url" value="${url}"/><!-- ${url}を書いておかないとJava中でPropertiesで値を更新しても反映されない -->
         <property name="username" value="tracuser"/>
         <property name="password" value="cspiral"/>
       </dataSource>
