@@ -36,7 +36,7 @@ public class BurnDownChartController {
 	 * @return
 	 * @throws SQLException
 	 */
-	public BurnDownChartEntity execute(MilestoneForm msf) throws SQLException {
+	public BurnDownChartEntity execute(MilestoneForm msf){
 		BurnDownChartEntity bdc_entity = new BurnDownChartEntity();
 
 		MilestoneModel msm = new MilestoneModel();
