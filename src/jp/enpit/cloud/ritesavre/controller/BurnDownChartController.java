@@ -10,7 +10,9 @@ import java.util.logging.Logger;
 import jp.enpit.cloud.ritesavre.model.Milestone;
 import jp.enpit.cloud.ritesavre.model.MilestoneModel;
 import jp.enpit.cloud.ritesavre.model.MilestoneNotDefinedException;
+import jp.enpit.cloud.ritesavre.model.TracDao;
 import jp.enpit.cloud.ritesavre.model.TracModel;
+import jp.enpit.cloud.ritesavre.mybatis.MyBatisConnectionFactory;
 import jp.enpit.cloud.ritesavre.util.TracDBUtils;
 import jp.enpit.cloud.ritesavre.view.BurnDownChartEntity;
 import jp.enpit.cloud.ritesavre.view.MilestoneForm;
@@ -58,14 +60,18 @@ public class BurnDownChartController {
 
 			conn = TracDBUtils.getConnection(project);
 			TracModel trac = new TracModel(conn);
+
+			TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory(project));
 			if(start == 0){
-				start = trac.getStartTime(msf.getMilestone());
+				//start = trac.getStartTime(msf.getMilestone());
+				start = tDao.getStartTime(msf.getMilestone());
 			}
 			//開発者の数と開始・終了時刻で理想線を引く
 			int seffort = trac.getDefaultInitialTaskEffort(msf.getMilestone(), start, member);
 			PointEntity s = new PointEntity(seffort, start);
 			bdc_entity.setIdealBeginPoint(s);
-			long end = trac.getEndTime(msf.getMilestone());
+			//long end = trac.getEndTime(msf.getMilestone());
+			long end = tDao.getEndTime(msf.getMilestone());
 			PointEntity e = new PointEntity(0, end);
 			bdc_entity.setIdealEndPoint(e);
 
