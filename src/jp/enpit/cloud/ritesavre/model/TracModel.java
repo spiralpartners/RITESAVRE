@@ -332,6 +332,11 @@ public class TracModel {
 
 	}
 
+	/**
+	 * @deprecated
+	 * @return
+	 * @throws SQLException
+	 */
 	public ArrayList<String> getMilestoneList() throws SQLException {
 		logger.info("TracModel.getMilestoneList");
 		ArrayList<String> milestones = new ArrayList<String>();

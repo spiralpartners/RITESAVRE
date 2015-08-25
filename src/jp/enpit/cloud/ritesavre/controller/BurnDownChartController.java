@@ -1,6 +1,5 @@
 package jp.enpit.cloud.ritesavre.controller;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,9 +11,7 @@ import jp.enpit.cloud.ritesavre.model.Milestone;
 import jp.enpit.cloud.ritesavre.model.MilestoneModel;
 import jp.enpit.cloud.ritesavre.model.MilestoneNotDefinedException;
 import jp.enpit.cloud.ritesavre.model.TracDao;
-import jp.enpit.cloud.ritesavre.model.TracModel;
 import jp.enpit.cloud.ritesavre.mybatis.MyBatisConnectionFactory;
-import jp.enpit.cloud.ritesavre.util.TracDBUtils;
 import jp.enpit.cloud.ritesavre.view.BurnDownChartEntity;
 import jp.enpit.cloud.ritesavre.view.MilestoneForm;
 import jp.enpit.cloud.ritesavre.view.PointEntity;
@@ -108,22 +105,9 @@ public class BurnDownChartController {
 	 */
 	public ArrayList<String> listMilestones(String project) {
 		ArrayList<String> milestones;
-		Connection conn = null;
-		try {
-			conn = TracDBUtils.getConnection(project);
-			TracModel trac = new TracModel(conn);
-			milestones = trac.getMilestoneList();
-		} catch (SQLException e) {
-			//System.out.println(e.getMessage());
-			milestones = new ArrayList<String>();
-		} finally {
-			try {
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-			}
-		}
+		TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory(project));
+		milestones = tDao.getMilestoneList();
+
 		Collections.sort(milestones);
 		return milestones;
 	}

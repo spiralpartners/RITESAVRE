@@ -1,5 +1,7 @@
 package jp.enpit.cloud.ritesavre.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.ibatis.session.SqlSession;
@@ -55,8 +57,6 @@ public class TracDao {
 
 	public int getRemainedTaskEfforts(ChartInput ci){
 		logger.info("TracDao.getRemainedTaskEfforts");
-		logger.info(ci.toString());
-		//int rtEfforts = 0;
 		Integer rtEfforts;
 		SqlSession session = sqlSessionFactory.openSession();
 
@@ -70,6 +70,19 @@ public class TracDao {
 		}else{
 			return rtEfforts.intValue();
 		}
+	}
+
+	public ArrayList<String> getMilestoneList(){
+		logger.info("TracDao.getMilestoneList");
+		List<String> milestones;
+		SqlSession session = sqlSessionFactory.openSession();
+		try{
+			milestones = session.selectList("Trac.getMilestoneList");
+		}finally{
+			session.close();
+		}
+		return new ArrayList<String>(milestones);
+
 	}
 
 }

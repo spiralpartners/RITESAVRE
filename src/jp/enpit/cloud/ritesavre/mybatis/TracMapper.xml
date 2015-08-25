@@ -15,6 +15,10 @@
         select due from milestone where name = #{milestone};
     </select>
 
+    <select id="getMilestoneList" resultType="java.lang.String">
+        select name from milestone;
+    </select>
+
     <!-- selectoneで呼び出す場合，selectステートメントは1つの値あるいはnullを返す．そのため，resultTypeをオブジェクトにしておかないとNull-poが発生することがある -->
     <select id="getRemainedTaskEfforts" parameterType="jp.enpit.cloud.ritesavre.model.ChartInput" resultType="java.lang.Integer">
 		select SUM(value) from ticket_custom where name = 'estimatedhours' and ticket IN
