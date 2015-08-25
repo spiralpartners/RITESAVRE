@@ -39,6 +39,7 @@
     <patternset id="resource">
         <include name="**/*.properties" />
         <include name="**/*.txt" />
+        <include name="**/*.xml" />
     </patternset>
 
 </project>
