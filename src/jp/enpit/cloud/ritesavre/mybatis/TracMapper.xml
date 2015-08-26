@@ -6,12 +6,12 @@
 <mapper namespace="Trac">
 
 
-    <select id="getStartTime" parameterType="String" resultType="long">
+    <select id="getStartTime" parameterType="String" resultType="java.lang.Long">
         select ticket_change.time from ticket,ticket_change where milestone = #{milestone}
         and ticket.id = ticket_change.ticket and field= 'status' and newvalue= 'accepted' order by ticket_change.time asc limit 0,1;
     </select>
 
-    <select id="getEndTime" parameterType="String" resultType="long">
+    <select id="getEndTime" parameterType="String" resultType="java.lang.Long">
         select due from milestone where name = #{milestone};
     </select>
 
