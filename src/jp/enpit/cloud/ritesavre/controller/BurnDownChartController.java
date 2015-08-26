@@ -49,6 +49,7 @@ public class BurnDownChartController {
 				project = msf.getProject();
 			}
 		} catch (MilestoneNotDefinedException e1) {
+			logger.info("MilestoneNotDefinedException");
 			start = 0;
 			project = msf.getProject();
 			member = 0;
@@ -84,7 +85,11 @@ public class BurnDownChartController {
 		ci.setMilestone(msf.getMilestone());
 		//end-startを50分割し，チャートの点が50より多くならないようにする
 		long unit = (end - start)/50;
-		//for (long t = start; t < end; t += 10 * 60 * 1000 * 1000) {
+
+		//unitが10分より小さい場合は5分にあわせる（点が細かくなり過ぎないように）
+		if(unit < 5 * 60 * 1000 * 1000){
+			unit = 5 * 60 * 1000 * 1000;
+		}
 		for (long t = start; t < end; t += unit) {
 
 			ci.setStart(t);
