@@ -2,12 +2,12 @@ package jp.enpit.cloud.ritesavre.model;
 
 import java.util.logging.Logger;
 
-import jp.enpit.cloud.ritesavre.util.DBUtils;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+
+import jp.enpit.cloud.ritesavre.util.DBUtils;
 
 public class MilestoneModel {
 
@@ -56,6 +56,7 @@ public class MilestoneModel {
 	}
 
 	/**
+	 * @deprecated
 	 * @param milestone マイルストーン名．例：preSprint
 	 * @param project プロジェクト名(DB名) 例：trac_EventSpiral
 	 * @param milestoneStart マイルストーン開始時刻 例：ミリ秒単位のUNIXTIME
@@ -67,7 +68,7 @@ public class MilestoneModel {
 		DBObject updateContents = new BasicDBObject();
 		updateContents.put("project", project);
 		updateContents.put("milestoneStart", milestoneStart);
-		
+
 
 		DBObject update = new BasicDBObject();
 
@@ -79,6 +80,7 @@ public class MilestoneModel {
 	}
 
 	public Milestone getMilestone(String milestone) throws MilestoneNotDefinedException{
+		logger.info("MilestoneModel.getMilestone milestone:" + milestone);
 		DBObject query = new BasicDBObject();
 		query.put("milestone", milestone);
 

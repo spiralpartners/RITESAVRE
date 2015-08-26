@@ -1,17 +1,17 @@
 package jp.enpit.cloud.ritesavre.controller;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import jp.enpit.cloud.ritesavre.model.ChartInput;
 import jp.enpit.cloud.ritesavre.model.Milestone;
 import jp.enpit.cloud.ritesavre.model.MilestoneModel;
 import jp.enpit.cloud.ritesavre.model.MilestoneNotDefinedException;
-import jp.enpit.cloud.ritesavre.model.TracModel;
-import jp.enpit.cloud.ritesavre.util.TracDBUtils;
+import jp.enpit.cloud.ritesavre.model.TracDao;
+import jp.enpit.cloud.ritesavre.mybatis.MyBatisConnectionFactory;
 import jp.enpit.cloud.ritesavre.view.BurnDownChartEntity;
 import jp.enpit.cloud.ritesavre.view.MilestoneForm;
 import jp.enpit.cloud.ritesavre.view.PointEntity;
@@ -31,10 +31,10 @@ public class BurnDownChartController {
 	 * 開始日が1970年になる
 	 * @param msf
 	 * @return
+	 * @throws SQLException
 	 */
-	public BurnDownChartEntity execute(MilestoneForm msf) {
+	public BurnDownChartEntity execute(MilestoneForm msf){
 		BurnDownChartEntity bdc_entity = new BurnDownChartEntity();
-		Connection conn = null;
 
 		MilestoneModel msm = new MilestoneModel();
 		long start;
@@ -49,56 +49,59 @@ public class BurnDownChartController {
 				project = msf.getProject();
 			}
 		} catch (MilestoneNotDefinedException e1) {
+			logger.info("MilestoneNotDefinedException");
 			start = 0;
 			project = msf.getProject();
 			member = 0;
 		}
 
-		try {
 
-			conn = TracDBUtils.getConnection(project);
-			TracModel trac = new TracModel(conn);
-			if(start == 0){
-				start = trac.getStartTime(msf.getMilestone());
-			}
-			//開発者の数と開始・終了時刻で理想線を引く
-			int seffort = trac.getDefaultInitialTaskEffort(msf.getMilestone(), start, member);
-			PointEntity s = new PointEntity(seffort, start);
-			bdc_entity.setIdealBeginPoint(s);
-			long end = trac.getEndTime(msf.getMilestone());
-			PointEntity e = new PointEntity(0, end);
-			bdc_entity.setIdealEndPoint(e);
 
-			//bdc_entity.addActualPoints(s);//実績値の切片追加->理想値の切片が変わったので変更
-			Date now = new Date();
-			if (now.getTime() * 1000 < end) {
-				end = now.getTime() * 1000;
-			}
-			if (start == 0){
-				start = end;
-			}
-			//System.out.println(start + ":" + end);
-			//10分毎にplot
-			for (long t = start; t < end; t += 10 * 60 * 1000 * 1000) {
-				logger.info("t = " + t + ", end = " + end);
-				//int reffort = trac.getRemainedTaskEffort(msf.getMilestone(), t, end);
-				int reffort = trac.getRemainedTaskEfforts(msf.getMilestone(), t);
-				PointEntity r = new PointEntity(reffort, t);
-				bdc_entity.addActualPoints(r);
-			}
-			int lasteffort = trac.getRemainedTaskEfforts(msf.getMilestone(), end);
-			PointEntity last = new PointEntity(lasteffort, end);
-			bdc_entity.addActualPoints(last);
-
-		} catch (SQLException e) {
-		} finally {
-			try {
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-			}
+		TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory(project));
+		//startが設定されていない場合は，最初にアクセプトされたチケットの更新時刻を開始時刻とする
+		if(start == 0){
+			start = tDao.getStartTime(msf.getMilestone());
 		}
+		//開発者の数と開始・終了時刻で理想線を引く
+		int seffort = tDao.getDefaultInitialTaskEffort(msf.getMilestone(), start, member);
+		PointEntity s = new PointEntity(seffort, start);
+		bdc_entity.setIdealBeginPoint(s);
+		long end = tDao.getEndTime(msf.getMilestone());
+		PointEntity e = new PointEntity(0, end);
+		bdc_entity.setIdealEndPoint(e);
+
+		//milestoneのdueにまだなっていない場合は現在時刻をendとする
+		Date now = new Date();
+		if (now.getTime() * 1000 < end) {
+			end = now.getTime() * 1000;
+		}
+		/*			if (start == 0){
+				start = end;
+			}*/
+
+		//System.out.println(start + ":" + end);
+		//10分毎にplot
+		ChartInput ci = new ChartInput();
+		ci.setMilestone(msf.getMilestone());
+		//end-startを50分割し，チャートの点が50より多くならないようにする
+		long unit = (end - start)/50;
+
+		//unitが10分より小さい場合は5分にあわせる（点が細かくなり過ぎないように）
+		if(unit < 5 * 60 * 1000 * 1000){
+			unit = 5 * 60 * 1000 * 1000;
+		}
+		for (long t = start; t < end; t += unit) {
+
+			ci.setStart(t);
+			int reffort = tDao.getRemainedTaskEfforts(ci);
+			PointEntity r = new PointEntity(reffort, t);
+			bdc_entity.addActualPoints(r);
+		}
+		ci.setStart(end);
+		int lasteffort = tDao.getRemainedTaskEfforts(ci);
+		PointEntity last = new PointEntity(lasteffort, end);
+		bdc_entity.addActualPoints(last);
+
 		return bdc_entity;
 	}
 
@@ -110,22 +113,9 @@ public class BurnDownChartController {
 	 */
 	public ArrayList<String> listMilestones(String project) {
 		ArrayList<String> milestones;
-		Connection conn = null;
-		try {
-			conn = TracDBUtils.getConnection(project);
-			TracModel trac = new TracModel(conn);
-			milestones = trac.getMilestoneList();
-		} catch (SQLException e) {
-			//System.out.println(e.getMessage());
-			milestones = new ArrayList<String>();
-		} finally {
-			try {
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-			}
-		}
+		TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory(project));
+		milestones = tDao.getMilestoneList();
+
 		Collections.sort(milestones);
 		return milestones;
 	}

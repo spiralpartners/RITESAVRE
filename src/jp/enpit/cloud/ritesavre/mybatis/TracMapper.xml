@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Trac">
+
+
+    <select id="getStartTime" parameterType="String" resultType="java.lang.Long">
+        select ticket_change.time from ticket,ticket_change where milestone = #{milestone}
+        and ticket.id = ticket_change.ticket and field= 'status' and newvalue= 'accepted' order by ticket_change.time asc limit 0,1;
+    </select>
+
+    <select id="getEndTime" parameterType="String" resultType="java.lang.Long">
+        select due from milestone where name = #{milestone};
+    </select>
+
+    <select id="getMilestoneList" resultType="java.lang.String">
+        select name from milestone;
+    </select>
+
+    <!-- selectoneで呼び出す場合，selectステートメントは1つの値あるいはnullを返す．そのため，resultTypeをオブジェクトにしておかないとNull-poが発生することがある -->
+    <select id="getRemainedTaskEfforts" parameterType="jp.enpit.cloud.ritesavre.model.ChartInput" resultType="java.lang.Integer">
+		select SUM(value) from ticket_custom where name = 'estimatedhours' and ticket IN
+		(select DISTINCT ticket.id from ticket LEFT JOIN ticket_change on ticket.id = ticket_change.ticket
+		LEFT JOIN ticket_custom on ticket.id = ticket_custom.ticket
+		where ((status != 'closed') or ((resolution = 'fixed') and (ticket_custom.name = 'enddate' and ticket_custom.value >= #{start} )))
+		and (milestone= #{milestone}));    </select>
+
+</mapper>
