@@ -14,22 +14,7 @@ UC:ログインする
   <allow>
 
 		<create creator="new">
-			<param name="class" value="jp.enpit.cloud.ritesavre.controller.DisplayTeamComponentInfoController" />
-		</create>
-		<create creator="new">
 			<param name="class" value="jp.enpit.cloud.ritesavre.controller.BurnDownChartController" />
-		</create>
-		<create creator="new">
-			<param name="class" value="jp.enpit.cloud.ritesavre.controller.DisplayEstimationAccuracyController" />
-		</create>
-		<create creator="new">
-			<param name="class" value="jp.enpit.cloud.ritesavre.controller.RegisterMilestoneInfoController" />
-		</create>
-		<create creator="new">
-			<param name="class" value="jp.enpit.cloud.ritesavre.controller.DisplayAssignmentListController" />
-		</create>
-		<create creator="new">
-			<param name="class" value="jp.enpit.cloud.ritesavre.controller.DisplayFluentdLogAnalysisController" />
 		</create>
 		<convert converter="bean" match="jp.enpit.cloud.ritesavre.view.*" />
 
