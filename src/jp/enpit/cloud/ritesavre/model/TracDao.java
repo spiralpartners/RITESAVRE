@@ -23,7 +23,7 @@ public class TracDao {
 	 */
 	public long getStartTime(String milestone){
 		logger.info("TracDao.getStartTime");
-		long start = 0;
+		Long start;
 		SqlSession session = sqlSessionFactory.openSession();
 
 		try{
@@ -31,9 +31,12 @@ public class TracDao {
 		}finally{
 			session.close();
 		}
-		System.out.println("start:"+start);
-
-		return start;
+		if(start == null){
+			return 0L;
+		}else{
+			System.out.println("start:"+start);
+			return start.longValue();
+		}
 
 	}
 
@@ -44,7 +47,7 @@ public class TracDao {
 	 */
 	public long getEndTime(String milestone){
 		logger.info("TracDao.getEndTime");
-		long end = 0;
+		Long end;
 		SqlSession session = sqlSessionFactory.openSession();
 
 		try{
@@ -52,9 +55,12 @@ public class TracDao {
 		}finally{
 			session.close();
 		}
-		System.out.println("start:"+end);
-
-		return end;
+		if(end == null){
+			return 0L;
+		}else{
+			System.out.println("end:"+end);
+			return end.longValue();
+		}
 
 	}
 
@@ -79,7 +85,7 @@ public class TracDao {
 	 * @return
 	 */
 	public int getRemainedTaskEfforts(ChartInput ci){
-		logger.info("TracDao.getRemainedTaskEfforts");
+		logger.info("TracDao.getRemainedTaskEfforts start:" + ci.getStart());
 		Integer rtEfforts;
 		SqlSession session = sqlSessionFactory.openSession();
 
