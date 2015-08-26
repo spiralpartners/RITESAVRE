@@ -82,7 +82,10 @@ public class BurnDownChartController {
 		//10分毎にplot
 		ChartInput ci = new ChartInput();
 		ci.setMilestone(msf.getMilestone());
-		for (long t = start; t < end; t += 10 * 60 * 1000 * 1000) {
+		//end-startを50分割し，チャートの点が50より多くならないようにする
+		long unit = (end - start)/50;
+		//for (long t = start; t < end; t += 10 * 60 * 1000 * 1000) {
+		for (long t = start; t < end; t += unit) {
 
 			ci.setStart(t);
 			int reffort = tDao.getRemainedTaskEfforts(ci);
