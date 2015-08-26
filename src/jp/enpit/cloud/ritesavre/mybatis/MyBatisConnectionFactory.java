@@ -17,7 +17,8 @@ public class MyBatisConnectionFactory {
     public static SqlSessionFactory getSqlSessionFactory(String database) {
         try {
         	Properties props = new Properties();
-        	props.setProperty("url", "jdbc:mysql://10.1.0.67:33060/" + database);
+        	//props.setProperty("url", "jdbc:mysql://10.1.0.67:33060/" + database);
+        	props.setProperty("url", "jdbc:mysql://localhost/" + database);
         	props.setProperty("username", "tracuser");
         	props.setProperty("password", "cspiral");
         	props.setProperty("driver", "com.mysql.jdbc.Driver");
