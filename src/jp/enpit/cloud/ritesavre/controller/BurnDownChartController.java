@@ -86,7 +86,7 @@ public class BurnDownChartController {
 		//end-startを50分割し，チャートの点が50より多くならないようにする
 		long unit = (end - start)/50;
 
-		//unitが10分より小さい場合は5分にあわせる（点が細かくなり過ぎないように）
+		//unitが5分より小さい場合は5分にあわせる（点が細かくなり過ぎないように）
 		if(unit < 5 * 60 * 1000 * 1000){
 			unit = 5 * 60 * 1000 * 1000;
 		}
