@@ -3,7 +3,7 @@ package jp.enpit.cloud.ritesavre.view;
 import java.util.Date;
 
 public class PointEntity {
-	
+
 	private int estimatedEffort;
 	private Date elapsedTime;
 
@@ -23,7 +23,7 @@ public class PointEntity {
 	public void setElapsedTime(Date elapsedTime) {
 		this.elapsedTime = elapsedTime;
 	}
-	
+
 	public String toString() {
 		return elapsedTime.toString() + ", " + String.valueOf(estimatedEffort);
 	}
