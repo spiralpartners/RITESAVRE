@@ -23,5 +23,9 @@ public class NotReviewedComponentEntity {
 		this.type = type;
 	}
 
+	public String toString(){
+		return "milestone:"+milestone+" component:"+component+" type:"+type;
+	}
+
 
 }
