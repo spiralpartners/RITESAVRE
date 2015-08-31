@@ -16,6 +16,13 @@ public class NotReviewedComponentController {
 		logger = Logger.getLogger(getClass().getName());
 	}
 
+	/**
+	 * レビューが終わっていないコンポーネントのリストをマイルストーンごとに返す．
+	 * REST形式では下記のように呼ぶ
+	 * http://localhost:8080/RITESAVRE/dwr/jsonp/NotReviewedComponentController/execute/trac_EventSpiral/
+	 * @param project プロジェクト名(例：trac_EventSpiral)
+	 * @return
+	 */
 	public ArrayList<NotReviewedComponentEntity> execute(String project){
 		logger.info("NotReviewedComponentController.execute");
 
