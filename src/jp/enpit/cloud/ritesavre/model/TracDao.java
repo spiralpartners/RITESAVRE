@@ -16,6 +16,19 @@ public class TracDao {
 		this.sqlSessionFactory = sqlSessionFactory;
 	}
 
+	public ArrayList<NotReviewedComponent> getNotReviewedComponentList(){
+		logger.info("TracDao.getNotReviewedComponentList");
+		List<NotReviewedComponent> nrComponents;
+		SqlSession session = sqlSessionFactory.openSession();
+		try{
+			nrComponents = session.selectList("Trac.getNotReviewedComponentList");
+		}finally{
+			session.close();
+		}
+		return new ArrayList<NotReviewedComponent>(nrComponents);
+
+	}
+
 	/**
 	 * そのマイルストーンで一番最初にacceptされた時刻を取得する
 	 * @param milestone
