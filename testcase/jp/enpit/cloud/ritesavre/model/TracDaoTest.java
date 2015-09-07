@@ -1,5 +1,7 @@
 package jp.enpit.cloud.ritesavre.model;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 
 import jp.enpit.cloud.ritesavre.mybatis.MyBatisConnectionFactory;
@@ -27,6 +29,16 @@ public class TracDaoTest {
 
 		System.out.println("effort:" + lasteffort);
 
+	}
+
+	@Test
+	public void testGetReviewedComponentList(){
+		TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory("trac_EventSpiral"));
+		ArrayList<NotReviewedComponent> nrComponents = tDao.getNotReviewedComponentList();
+		for(NotReviewedComponent c:nrComponents){
+			System.out.println(c);
+
+		}
 
 	}
 

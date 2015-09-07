@@ -5,7 +5,7 @@
 
 <mapper namespace="Trac">
 
-
+<!-- スプリントバーンダウンチャート -->
     <select id="getStartTime" parameterType="String" resultType="java.lang.Long">
         select ticket_change.time from ticket,ticket_change where milestone = #{milestone}
         and ticket.id = ticket_change.ticket and field= 'status' and newvalue= 'accepted' order by ticket_change.time asc limit 0,1;
@@ -27,4 +27,25 @@
 		where ((status != 'closed') or ((resolution = 'fixed') and (ticket_custom.name = 'enddate' and ticket_custom.value >= #{start} )))
 		and (milestone= #{milestone}));    </select>
 
+<!-- Not reviewed Component -->
+	<select id="getNotReviewedComponentList" resultType="jp.enpit.cloud.ritesavre.model.NotReviewedComponent">
+select * from (
+    select t.id, t.milestone, t.component, t.type,
+           from_unixtime(t.changetime/1000000) as changetime
+    from ticket as t,
+         (
+	        select milestone, component, max(changetime) as changetime
+	        from ticket
+	        where status = 'closed' and resolution = 'fixed'
+	        group by milestone, component
+         )
+         as maxtime
+    where t.milestone  = maxtime.milestone
+    and   t.component  = maxtime.component
+    and   t.status = 'closed' and t.resolution = 'fixed'
+    and   t.changetime = maxtime.changetime
+    order by t.milestone, t.changetime
+) as tmp
+where type != 'レビュー' and component not like 'UC[%';
+    </select>
 </mapper>
