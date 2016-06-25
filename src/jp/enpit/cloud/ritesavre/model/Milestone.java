@@ -5,6 +5,7 @@ public class Milestone {
 	private String milestone;
 	private String project;
 	private long milestoneStart;
+	private long milestoneDue;
 	private int member;
 
 	public String getMilestone() {
@@ -23,13 +24,23 @@ public class Milestone {
 		return milestoneStart;
 	}
 	public void setMilestoneStart(long milestoneStart) {
-		this.milestoneStart = milestoneStart;
+		if(milestoneStart > 1000000000000000L){
+			this.milestoneStart = milestoneStart/1000000;
+		}else{
+			this.milestoneStart = milestoneStart;
+		}
 	}
 	public int getMember() {
 		return member;
 	}
 	public void setMember(int member) {
 		this.member = member;
+	}
+	public long getMilestoneDue() {
+		return milestoneDue;
+	}
+	public void setMilestoneDue(long milestoneDue) {
+		this.milestoneDue = milestoneDue;
 	}
 
 

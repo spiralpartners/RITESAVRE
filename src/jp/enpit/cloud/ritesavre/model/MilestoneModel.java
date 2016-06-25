@@ -34,6 +34,51 @@ public class MilestoneModel {
 		coll = db.getCollection(DB_MILESTONE_COLLECTION);
 	}
 
+	public Milestone getMilestone(String project, String milestone)throws MilestoneNotDefinedException{
+		logger.info("MilestoneModel.getMilestone project "+project+" milestone:" + milestone);
+		DBObject query = new BasicDBObject();
+		query.put("project", project);
+		query.put("milestone", milestone);
+
+		DBObject result = coll.findOne(query);
+
+		if(result == null){
+			throw new MilestoneNotDefinedException("MileStone is not defined");
+		}
+
+		Milestone ms = new Milestone();
+		String[] ignore = {"milestoneDue"};
+		DBUtils.attachProperties(ms, result,ignore);
+
+		return ms;
+	}
+
+	/**
+	 * @deprecated
+	 * @param milestone
+	 * @return
+	 * @throws MilestoneNotDefinedException
+	 */
+	public Milestone getMilestone(String milestone) throws MilestoneNotDefinedException{
+		logger.info("MilestoneModel.getMilestone milestone:" + milestone);
+		DBObject query = new BasicDBObject();
+		query.put("milestone", milestone);
+
+
+		DBObject result = coll.findOne(query);
+
+		if(result == null){
+			throw new MilestoneNotDefinedException("MileStone is not defined");
+		}
+
+		Milestone ms = new Milestone();
+		DBUtils.attachProperties(ms, result);
+
+		return ms;
+	}
+
+
+
 	/**
 	 * @deprecated
 	 * @param milestone
@@ -79,23 +124,5 @@ public class MilestoneModel {
 
 	}
 
-	public Milestone getMilestone(String milestone) throws MilestoneNotDefinedException{
-		logger.info("MilestoneModel.getMilestone milestone:" + milestone);
-		DBObject query = new BasicDBObject();
-		query.put("milestone", milestone);
-
-
-		DBObject result = coll.findOne(query);
-
-		if(result == null){
-			throw new MilestoneNotDefinedException("MileStone is not defined");
-		}
-
-		Milestone ms = new Milestone();
-		DBUtils.attachProperties(ms, result);
-
-		return ms;
-
-	}
 
 }

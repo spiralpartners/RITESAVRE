@@ -5,26 +5,53 @@
 
 <mapper namespace="Trac">
 
-
+<!-- スプリントバーンダウンチャート -->
     <select id="getStartTime" parameterType="String" resultType="java.lang.Long">
         select ticket_change.time from ticket,ticket_change where milestone = #{milestone}
         and ticket.id = ticket_change.ticket and field= 'status' and newvalue= 'accepted' order by ticket_change.time asc limit 0,1;
     </select>
 
     <select id="getEndTime" parameterType="String" resultType="java.lang.Long">
-        select due from milestone where name = #{milestone};
+        select truncate(due/1000000,0) from milestone where name = #{milestone};
     </select>
 
     <select id="getMilestoneList" resultType="java.lang.String">
         select name from milestone;
     </select>
 
+    <select id="getRemainedTaskEffortsAfterProject" parameterType="jp.enpit.cloud.ritesavre.model.ChartInput" resultType="java.lang.Integer">
+select sum(estimatedhours) from TICKET_ALL
+where milestone= #{milestone}
+and ( enddate > #{unixtime} or enddate is null )
+and (resolution is null or resolution != 'invalid');</select>
+
     <!-- selectoneで呼び出す場合，selectステートメントは1つの値あるいはnullを返す．そのため，resultTypeをオブジェクトにしておかないとNull-poが発生することがある -->
     <select id="getRemainedTaskEfforts" parameterType="jp.enpit.cloud.ritesavre.model.ChartInput" resultType="java.lang.Integer">
 		select SUM(value) from ticket_custom where name = 'estimatedhours' and ticket IN
 		(select DISTINCT ticket.id from ticket LEFT JOIN ticket_change on ticket.id = ticket_change.ticket
 		LEFT JOIN ticket_custom on ticket.id = ticket_custom.ticket
-		where ((status != 'closed') or ((resolution = 'fixed') and (ticket_custom.name = 'enddate' and ticket_custom.value >= #{start} )))
+		where ((status != 'closed') or ((resolution = 'fixed') and (ticket_custom.name = 'enddate' and ticket_custom.value >= #{unixtime} )))
 		and (milestone= #{milestone}));    </select>
 
+<!-- Not reviewed Component -->
+	<select id="getNotReviewedComponentList" resultType="jp.enpit.cloud.ritesavre.model.NotReviewedComponent">
+select * from (
+    select t.id, t.milestone, t.component, t.type,
+           from_unixtime(t.changetime/1000000) as changetime
+    from ticket as t,
+         (
+	        select milestone, component, max(changetime) as changetime
+	        from ticket
+	        where status = 'closed' and resolution = 'fixed'
+	        group by milestone, component
+         )
+         as maxtime
+    where t.milestone  = maxtime.milestone
+    and   t.component  = maxtime.component
+    and   t.status = 'closed' and t.resolution = 'fixed'
+    and   t.changetime = maxtime.changetime
+    order by t.milestone, t.changetime
+) as tmp
+where type != 'レビュー' and component not like 'UC[%';
+    </select>
 </mapper>

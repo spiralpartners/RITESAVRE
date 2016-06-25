@@ -26,7 +26,7 @@ public class BurnDownChartController {
 
 	/**
 	 * 正しくバーンダウンチャートを表示するためには，mongodbのritesavre db内のmilestone collに
-	 * MilestoneFormの値が入力されている必要がある ->そのうちMongoDB使わないように変更したい
+	 * MilestoneFormの値が入力されている必要がある
 	 * また，Tracの該当プロジェクトにおいて，対象マイルストーンの締め切りが入力されていないとチャートの
 	 * 開始日が1970年になる
 	 * @param msf
@@ -57,7 +57,8 @@ public class BurnDownChartController {
 
 
 
-		TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory(project));
+		//TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory("133.1.236.176", msf.getProject()));
+		TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory(msf.getProject(), msf.getProject()));
 		//startが設定されていない場合は，最初にアクセプトされたチケットの更新時刻を開始時刻とする
 		if(start == 0){
 			start = tDao.getStartTime(msf.getMilestone());
@@ -66,7 +67,7 @@ public class BurnDownChartController {
 		int seffort = tDao.getDefaultInitialTaskEffort(msf.getMilestone(), start, member);
 		PointEntity s = new PointEntity(seffort, start);
 		bdc_entity.setIdealBeginPoint(s);
-		long end = tDao.getEndTime(msf.getMilestone());
+		long end = tDao.getDueTime(msf.getMilestone());
 		PointEntity e = new PointEntity(0, end);
 		bdc_entity.setIdealEndPoint(e);
 
@@ -92,12 +93,12 @@ public class BurnDownChartController {
 		}
 		for (long t = start; t < end; t += unit) {
 
-			ci.setStart(t);
+			ci.setUnixtime(t);
 			int reffort = tDao.getRemainedTaskEfforts(ci);
 			PointEntity r = new PointEntity(reffort, t);
 			bdc_entity.addActualPoints(r);
 		}
-		ci.setStart(end);
+		ci.setUnixtime(end);
 		int lasteffort = tDao.getRemainedTaskEfforts(ci);
 		PointEntity last = new PointEntity(lasteffort, end);
 		bdc_entity.addActualPoints(last);
@@ -113,7 +114,8 @@ public class BurnDownChartController {
 	 */
 	public ArrayList<String> listMilestones(String project) {
 		ArrayList<String> milestones;
-		TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory(project));
+		//TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory("133.1.236.176", project));
+		TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory(project,project));
 		milestones = tDao.getMilestoneList();
 
 		Collections.sort(milestones);
