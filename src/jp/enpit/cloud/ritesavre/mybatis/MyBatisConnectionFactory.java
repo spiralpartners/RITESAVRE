@@ -1,4 +1,4 @@
-package jp.enpit.cloud.ritesavre.mybatis;
+﻿package jp.enpit.cloud.ritesavre.mybatis;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
