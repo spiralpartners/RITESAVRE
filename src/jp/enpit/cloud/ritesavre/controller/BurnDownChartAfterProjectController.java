@@ -43,8 +43,8 @@ public class BurnDownChartAfterProjectController {
 		 * Done 理想開始点、終了点を計算
 		 * 時刻を入力するとその時点での残見積もり工数を取得するSQLを開始～終了まで3分刻みで取得する処理を実施
 		 */
-		TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory("133.1.236.176", msf.getProject()));
-		//TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory(msf.getProject(), msf.getProject()));
+		//TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory("133.1.236.176", msf.getProject()));
+		TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory(msf.getProject(), msf.getProject()));
 		//System.out.println(tDao.getDueTime(msf.getMilestone()));
 
 		MilestoneModel msm = new MilestoneModel();
