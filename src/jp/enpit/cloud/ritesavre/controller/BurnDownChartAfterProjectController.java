@@ -43,8 +43,8 @@ public class BurnDownChartAfterProjectController {
 		 * Done 理想開始点、終了点を計算
 		 * 時刻を入力するとその時点での残見積もり工数を取得するSQLを開始～終了まで3分刻みで取得する処理を実施
 		 */
-		//TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory("133.1.236.176", msf.getProject()));
-		TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory(msf.getProject(), msf.getProject()));
+		TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory("133.1.236.176", msf.getProject()));
+		//TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory(msf.getProject(), msf.getProject()));
 		//System.out.println(tDao.getDueTime(msf.getMilestone()));
 
 		MilestoneModel msm = new MilestoneModel();
@@ -54,21 +54,22 @@ public class BurnDownChartAfterProjectController {
 		BurnDownChartEntity bdc_entity = new BurnDownChartEntity();
 
 		if(ms.getMilestoneStart() == 0){
-			throw new MilestoneNotDefinedException("開始時刻がマイルストーンに設定されていません");
+			throw new MilestoneNotDefinedException("マイルストーン開始時刻が管理者によって設定されていません");
 		}
 		//開発者の数と開始・終了時刻で理想線を引く
-		int seffort = tDao.getDefaultInitialTaskEffort(msf.getMilestone(), ms.getMilestoneStart(),ms.getMember());
-		PointEntity s = new PointEntity(seffort, ms.getMilestoneStart());
-		bdc_entity.setIdealBeginPoint(s);
 		long end = tDao.getDueTime(msf.getMilestone());
-		PointEntity e = new PointEntity(0, end);
-		bdc_entity.setIdealEndPoint(e);
-
 		//milestoneのdueにまだなっていない場合は現在時刻をendとする
 		Date now = new Date();
-		if (now.getTime() / 1000 < end) {
+		if(end == 0L){
+			throw new MilestoneNotDefinedException("マイルストーン終了時刻がTracに設定されていません");
+		}else if (now.getTime() / 1000 < end) {
 			end = now.getTime() / 1000;
 		}
+		PointEntity e = new PointEntity(0, end);
+		bdc_entity.setIdealEndPoint(e);
+		int seffort = tDao.getDefaultInitialTaskEffort(msf.getMilestone(), ms.getMilestoneStart(),end,ms.getMember());
+		PointEntity s = new PointEntity(seffort, ms.getMilestoneStart());
+		bdc_entity.setIdealBeginPoint(s);
 
 		ChartInput ci = new ChartInput();
 		ci.setMilestone(ms.getMilestone());

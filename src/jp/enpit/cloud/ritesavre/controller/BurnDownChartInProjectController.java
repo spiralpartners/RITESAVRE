@@ -59,20 +59,18 @@ public class BurnDownChartInProjectController {
 			throw new MilestoneNotDefinedException("開始時刻がマイルストーンに設定されていません");
 		}
 		//開発者の数と開始・終了時刻で理想線を引く
-		int seffort = tDao.getDefaultInitialTaskEffort(msf.getMilestone(), ms.getMilestoneStart(),ms.getMember());
-		PointEntity s = new PointEntity(seffort, ms.getMilestoneStart());
-		bdc_entity.setIdealBeginPoint(s);
 		long end = tDao.getDueTime(msf.getMilestone());
-
 		//milestoneのdueにまだなっていない場合は現在時刻をendとする
 		//Date.getTime()ではUnixtimeのミリ秒単位が返ってくるので、1000で割っておく
 		Date now = new Date();
 		if (now.getTime() / 1000 < end) {
 			end = now.getTime() / 1000;
 		}
-
 		PointEntity e = new PointEntity(0, end);
 		bdc_entity.setIdealEndPoint(e);
+		int seffort = tDao.getDefaultInitialTaskEffort(msf.getMilestone(), ms.getMilestoneStart(),end,ms.getMember());
+		PointEntity s = new PointEntity(seffort, ms.getMilestoneStart());
+		bdc_entity.setIdealBeginPoint(s);
 
 		//mongodb.ritesavre.sbdchartに登録されている点(開始～終了の範囲で)をすべて取得する
 		SbdchartModel schart = new SbdchartModel();

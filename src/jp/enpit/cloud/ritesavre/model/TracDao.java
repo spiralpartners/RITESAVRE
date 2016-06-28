@@ -84,13 +84,13 @@ public class TracDao {
 	 * @param member
 	 * @return
 	 */
-	public int getDefaultInitialTaskEffort(String milestone, long start,  int member){
+	public int getDefaultInitialTaskEffort(String milestone, long start, long end, int member){
 		//TODO 引数をMilestoneにする
-		long due =0;
-		due = this.getDueTime(milestone);
+//		long due =0L;
+//		due = this.getDueTime(milestone);
 
 		//calc default initial effort
-		return (int) (member * (due-start)/60);
+		return (int) (member * (end-start)/60);
 	}
 
 	/**

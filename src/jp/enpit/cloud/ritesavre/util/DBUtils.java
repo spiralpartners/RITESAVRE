@@ -37,8 +37,8 @@ public class DBUtils {
 	// invisible singleton constructor
 	private DBUtils() {
 		try {
-			m = new Mongo("localhost", 27017);
-			//m = new Mongo("133.1.236.176", 27017);
+			//m = new Mongo("localhost", 27017);
+			m = new Mongo("133.1.236.176", 27017);
 			db = m.getDB(dbName);
 		} catch (UnknownHostException | MongoException e) {
 			// TODO 自動生成された catch ブロック
