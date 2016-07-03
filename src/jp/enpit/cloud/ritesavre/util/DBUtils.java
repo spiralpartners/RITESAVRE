@@ -1,4 +1,4 @@
-﻿package jp.enpit.cloud.ritesavre.util;
+package jp.enpit.cloud.ritesavre.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

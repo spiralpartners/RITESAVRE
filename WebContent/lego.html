@@ -12,6 +12,7 @@
 
 	<script type='text/javascript' src='dwr/engine.js'></script>
 	<script type='text/javascript' src='dwr/interface/BurnDownChartController.js'></script>
+	<script type='text/javascript' src='dwr/interface/BurnDownChartInProjectController.js'></script>
 
 	<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 </head>
@@ -45,7 +46,7 @@
 
 		$("#loading").show();
 		$("#bd_chart").hide();
-		BurnDownChartController.execute(form, {
+		BurnDownChartInProjectController.execute(form, {
 			callback: function(bdc_data) {
 				var chart_data = createBdcData(bdc_data);
 

@@ -30,10 +30,13 @@ public class SbdchartModel {
 	 */
 	private DBCollection coll;
 	/**
+	 * getActualPointsで返す上限の数（これより多い点が登録されている場合は間引く）
+	 */
+	private final int POINT_ENTITY_NUM = 100;
+	/**
 	 * Logger、DB、DBCollectionフィールドに各オブジェクトを設定する．
 	 */
-
-	public SbdchartModel() {
+		public SbdchartModel() {
 		logger = Logger.getLogger(getClass().getName());
 		db = DBUtils.getInstance().getDb();
 		coll = db.getCollection(DB_SBDCHART_COLLECTION);
@@ -55,13 +58,27 @@ public class SbdchartModel {
 
 		try{
 			DBCursor cursor = coll.find(keys);
-			while(cursor.hasNext()){
+			//actualPointsの数がPOINT_ENTITY_NUMの数程度に収まるように間引きながらmongoから情報を取得する
+			int count = cursor.count();
+			double skip = 1;
+			if(count>POINT_ENTITY_NUM) skip = (double)count/(double)POINT_ENTITY_NUM;
+			for(int i=0;cursor.hasNext();i++){
 				DBObject obj = cursor.next();
-				PointEntity p = new PointEntity();
-				p.setEstimatedEffort((int)(obj.get("remainingEffort")));
-				p.setElapsedTime(new Date(((long)(obj.get("time"))*1000)));
-				actualPoints.add(p);
+				if(i%(int)skip==0){
+					PointEntity p = new PointEntity();
+					p.setEstimatedEffort((int)(obj.get("remainingEffort")));
+					p.setElapsedTime(new Date(((long)(obj.get("time"))*1000)));
+					actualPoints.add(p);
+				}
 			}
+
+//			while(cursor.hasNext()){
+//				DBObject obj = cursor.next();
+//				PointEntity p = new PointEntity();
+//				p.setEstimatedEffort((int)(obj.get("remainingEffort")));
+//				p.setElapsedTime(new Date(((long)(obj.get("time"))*1000)));
+//				actualPoints.add(p);
+//			}
 		}catch(MongoException e){
 			logger.warning("Mongo Exception");
 		}
