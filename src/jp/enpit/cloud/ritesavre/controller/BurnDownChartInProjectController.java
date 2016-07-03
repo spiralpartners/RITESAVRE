@@ -36,13 +36,8 @@ public class BurnDownChartInProjectController {
 	 * @throws SQLException
 	 */
 	public BurnDownChartEntity execute(MilestoneForm msf) throws MilestoneNotDefinedException{
+		logger.info("BDCInProjectController.execute");
 		/**
-		 * TODO 必要な処理
-		 * Done tracからマイルストーンの締め切りを取得
-		 * Done mongoからメンバー数を取得
-		 * Done mongoから開始時刻を取得
-		 * Done 理想開始点、終了点を計算
-		 * 時刻を入力するとその時点での残見積もり工数を取得するSQLを開始～終了まで3分刻みで取得する処理を実施
 		 */
 		MilestoneModel msm = new MilestoneModel();
 		Milestone ms = msm.getMilestone(msf.getProject(), msf.getMilestone());
@@ -50,8 +45,6 @@ public class BurnDownChartInProjectController {
 		//TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory("133.1.236.176", msf.getProject()));
 		TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory(msf.getProject(), msf.getProject()));
 		ms.setMilestoneDue(tDao.getDueTime(msf.getMilestone()));
-
-		//System.out.println("Start:"+ms.getMilestoneStart());
 
 		BurnDownChartEntity bdc_entity = new BurnDownChartEntity();
 
@@ -83,8 +76,8 @@ public class BurnDownChartInProjectController {
 	public static void main(String[] args) throws MilestoneNotDefinedException {
 		BurnDownChartInProjectController bdcipc = new BurnDownChartInProjectController();
 		MilestoneForm msf = new MilestoneForm();
-		msf.setProject("trac_apple");
-		msf.setMilestone("apple1");
+		msf.setProject("trac_lego");
+		msf.setMilestone("lego1");
 		bdcipc.execute(msf);
 
 	}

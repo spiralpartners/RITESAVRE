@@ -1,4 +1,4 @@
-﻿package jp.enpit.cloud.ritesavre.controller;
+package jp.enpit.cloud.ritesavre.controller;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
