@@ -23,6 +23,7 @@
 			<option value="">- milestone -</option>
 		</select>
 	</div>
+    <div id="error_msg"></div>
     <div id="bd_chart"></div>
 	<div id="loading"><img src="images/loading.gif"/></div>
 
@@ -121,8 +122,8 @@
 
 
 
-	//const REFRESH_INTERVAL = 10*60*1000; //10分間隔でグラフ更新
-	const REFRESH_INTERVAL = 1*60*1000; //1分間隔でグラフ更新
+	const REFRESH_INTERVAL = 5*60*1000; //10分間隔でグラフ更新
+	//const REFRESH_INTERVAL = 1*60*1000; //1分間隔でグラフ更新
 	const CHECK_INTERVAL = 1000;         //毎秒チェック
 	var refreshTimer;
 
