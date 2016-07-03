@@ -1,6 +1,7 @@
 package jp.enpit.cloud.ritesavre.view;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class BurnDownChartEntity extends AbstractEntity {
@@ -26,6 +27,9 @@ public class BurnDownChartEntity extends AbstractEntity {
 	}
 	public ArrayList<PointEntity> getActualPoints() {
 		return actualPoints;
+	}
+	public void setActualPoints(ArrayList<PointEntity> actualPoints) {
+		this.actualPoints = actualPoints;
 	}
 	public void addActualPoints(PointEntity actualPoint) {
 		this.actualPoints.add(actualPoint);

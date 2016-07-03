@@ -54,11 +54,11 @@ public class TracDao {
 	}
 
 	/**
-	 * milestoneに設定されたdueタイムを取得する
+	 * milestoneに設定されたdueタイムをunixtime(秒単位)で取得する
 	 * @param milestone
 	 * @return
 	 */
-	public long getEndTime(String milestone){
+	public long getDueTime(String milestone){
 		logger.info("TracDao.getEndTime");
 		Long end;
 		SqlSession session = sqlSessionFactory.openSession();
@@ -84,21 +84,23 @@ public class TracDao {
 	 * @param member
 	 * @return
 	 */
-	public int getDefaultInitialTaskEffort(String milestone, long start,  int member){
-		long due =0;
-		due = this.getEndTime(milestone);
+	public int getDefaultInitialTaskEffort(String milestone, long start, long end, int member){
+		//TODO 引数をMilestoneにする
+//		long due =0L;
+//		due = this.getDueTime(milestone);
 
 		//calc default initial effort
-		return (int) (member * (due-start)/(60*1000*1000));
+		return (int) (member * (end-start)/60);
 	}
 
 	/**
 	 * 対象マイルストーンの指定された時刻の時点で未終了の全チケットの見積時間を返す
+	 * @deprecated
 	 * @param ci
 	 * @return
 	 */
 	public int getRemainedTaskEfforts(ChartInput ci){
-		logger.info("TracDao.getRemainedTaskEfforts start:" + ci.getStart());
+		logger.info("TracDao.getRemainedTaskEfforts start:" + ci.getUnixtime());
 		Integer rtEfforts;
 		SqlSession session = sqlSessionFactory.openSession();
 
@@ -113,6 +115,30 @@ public class TracDao {
 			return rtEfforts.intValue();
 		}
 	}
+
+	/**
+	 * 対象マイルストーンの指定された時刻の時点で未終了の全チケットの見積時間を返す
+	 * プロジェクト終了後にチャートを表示する際に利用されることを想定している
+	 * @param ci
+	 * @return
+	 */
+	public int getRemainedTaskEffortsAfterProject(ChartInput ci){
+		logger.info("TracDao.getRemainedTaskEffortsAfterProject start:" + ci.getUnixtime());
+		Integer rtEfforts;
+		SqlSession session = sqlSessionFactory.openSession();
+
+		try{
+			rtEfforts = session.selectOne("Trac.getRemainedTaskEffortsAfterProject",ci);
+		}finally{
+			session.close();
+		}
+		if(rtEfforts == null){
+			return 0;
+		}else{
+			return rtEfforts.intValue();
+		}
+	}
+
 
 	public ArrayList<String> getMilestoneList(){
 		logger.info("TracDao.getMilestoneList");

@@ -1,4 +1,4 @@
-package jp.enpit.cloud.ritesavre.controller;
+﻿package jp.enpit.cloud.ritesavre.controller;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -26,7 +26,8 @@ public class NotReviewedComponentController {
 	public ArrayList<NotReviewedComponentEntity> execute(String project){
 		logger.info("NotReviewedComponentController.execute");
 
-		TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory(project));
+		//TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory("133.1.236.176", msf.getProject()));
+		TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory(project,project));
 		ArrayList<NotReviewedComponent> nrComponents = tDao.getNotReviewedComponentList();
 
 		ArrayList<NotReviewedComponentEntity> nrcEntityList = new ArrayList<NotReviewedComponentEntity>();

@@ -5,6 +5,12 @@
   <allow>
 
 		<create creator="new">
+			<param name="class" value="jp.enpit.cloud.ritesavre.controller.BurnDownChartAfterProjectController" />
+		</create>
+		<create creator="new">
+			<param name="class" value="jp.enpit.cloud.ritesavre.controller.BurnDownChartInProjectController" />
+		</create>
+		<create creator="new">
 			<param name="class" value="jp.enpit.cloud.ritesavre.controller.BurnDownChartController" />
 		</create>
 		<create creator="new">
