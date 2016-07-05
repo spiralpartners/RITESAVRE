@@ -11,6 +11,8 @@
         <property name="url" value="${url}"/><!-- ${url}を書いておかないとJava中でPropertiesで値を更新しても反映されない -->
         <property name="username" value="tracuser"/>
         <property name="password" value="cspiral"/>
+        <property name="poolPingQuery" value="SELECT 1 FROM DUAL" />
+        <property name="poolPingEnabled" value="true" />
       </dataSource>
     </environment>
   </environments>
