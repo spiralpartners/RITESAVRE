@@ -43,6 +43,11 @@ public class SbdchartModel {
 
 	}
 
+	/**
+	 * POINT_ENTITY_NUMの数だけ間引いて、mongoに登録されたチャートの点を返す
+	 * @param m
+	 * @return
+	 */
 	public ArrayList<PointEntity> getActualPoints(Milestone m){
 		logger.info("SbdchartModel.getActualPoints");
 		ArrayList<PointEntity> actualPoints = new ArrayList<PointEntity>();
@@ -53,11 +58,13 @@ public class SbdchartModel {
 		DBObject timearea = new BasicDBObject();
 		timearea.put("$gte", m.getMilestoneStart());
 		timearea.put("$lte", m.getMilestoneDue());
-
 		keys.put("time", timearea);
 
+		DBObject sortKey = new BasicDBObject();
+		sortKey.put("time", 1);//昇順
+
 		try{
-			DBCursor cursor = coll.find(keys);
+			DBCursor cursor = coll.find(keys).sort(sortKey);
 			//actualPointsの数がPOINT_ENTITY_NUMの数程度に収まるように間引きながらmongoから情報を取得する
 			int count = cursor.count();
 			double skip = 1;

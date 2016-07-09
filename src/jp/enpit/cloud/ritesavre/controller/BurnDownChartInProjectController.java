@@ -65,7 +65,7 @@ public class BurnDownChartInProjectController {
 		PointEntity s = new PointEntity(seffort, ms.getMilestoneStart());
 		bdc_entity.setIdealBeginPoint(s);
 
-		//mongodb.ritesavre.sbdchartに登録されている点(開始～終了の範囲で)をすべて取得する
+		//mongodb.ritesavre.sbdchartに登録されている点(開始～終了の範囲で)を取得する
 		SbdchartModel schart = new SbdchartModel();
 		ArrayList<PointEntity> a = schart.getActualPoints(ms);
 		bdc_entity.setActualPoints(a);
