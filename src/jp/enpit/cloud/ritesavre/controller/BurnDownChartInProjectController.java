@@ -55,10 +55,10 @@ public class BurnDownChartInProjectController {
 		long end = tDao.getDueTime(msf.getMilestone());
 		//milestoneのdueにまだなっていない場合は現在時刻をendとする
 		//Date.getTime()ではUnixtimeのミリ秒単位が返ってくるので、1000で割っておく
-		Date now = new Date();
-		if (now.getTime() / 1000 < end) {
-			end = now.getTime() / 1000;
-		}
+//		Date now = new Date();
+//		if (now.getTime() / 1000 < end) {
+//			end = now.getTime() / 1000;
+//		}
 		PointEntity e = new PointEntity(0, end);
 		bdc_entity.setIdealEndPoint(e);
 		int seffort = tDao.getDefaultInitialTaskEffort(msf.getMilestone(), ms.getMilestoneStart(),end,ms.getMember());
