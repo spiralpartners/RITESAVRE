@@ -43,7 +43,7 @@ public class MilestoneModel {
 		DBObject result = coll.findOne(query);
 
 		if(result == null){
-			throw new MilestoneNotDefinedException("MileStone is not defined");
+			throw new MilestoneNotDefinedException("Milestone情報がMongoDBに登録されていません");
 		}
 
 		Milestone ms = new Milestone();

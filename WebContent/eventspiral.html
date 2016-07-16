@@ -12,6 +12,7 @@
 
 	<script type='text/javascript' src='dwr/engine.js'></script>
 	<script type='text/javascript' src='dwr/interface/BurnDownChartController.js'></script>
+	<script type='text/javascript' src='dwr/interface/BurnDownChartInProjectController.js'></script>
 
 	<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 </head>
@@ -23,6 +24,7 @@
 			<option value="">- milestone -</option>
 		</select>
 	</div>
+    <div id="error_msg"></div>
     <div id="bd_chart"></div>
 	<div id="loading"><img src="images/loading.gif"/></div>
 
@@ -44,8 +46,10 @@
 
 		$("#loading").show();
 		$("#bd_chart").hide();
-		BurnDownChartController.execute(form, {
+		BurnDownChartInProjectController.execute(form, {
 			callback: function(bdc_data) {
+				$('#error_msg').text("");
+
 				var chart_data = createBdcData(bdc_data);
 
 				var chart = new google.visualization.ScatterChart(document.getElementById('bd_chart'));

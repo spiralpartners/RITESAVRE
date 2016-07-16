@@ -45,6 +45,8 @@
 		$("#bd_chart").hide();
 		BurnDownChartAfterProjectController.execute(form, {
 			callback: function(bdc_data) {
+				$('#error_msg').text("");
+
 				var chart_data = createBdcData(bdc_data);
 
 				var chart = new google.visualization.ScatterChart(document.getElementById('bd_chart'));

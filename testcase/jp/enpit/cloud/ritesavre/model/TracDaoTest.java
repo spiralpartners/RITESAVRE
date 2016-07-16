@@ -9,7 +9,7 @@ import jp.enpit.cloud.ritesavre.mybatis.MyBatisConnectionFactory;
 public class TracDaoTest {
 
 	@Test
-	public void testGetEndTime(){
+	public void testGetEndTime() throws MilestoneNotDefinedException{
 		TracDao tDao = new TracDao(MyBatisConnectionFactory.getSqlSessionFactory("trac_EventSpiral","trac_EventSpiral"));
 		Long end = tDao.getDueTime("Sprint1st");
 		System.out.println("end:" + end);

@@ -57,8 +57,9 @@ public class TracDao {
 	 * milestoneに設定されたdueタイムをunixtime(秒単位)で取得する
 	 * @param milestone
 	 * @return
+	 * @throws MilestoneNotDefinedException
 	 */
-	public long getDueTime(String milestone){
+	public long getDueTime(String milestone) throws MilestoneNotDefinedException{
 		logger.info("TracDao.getEndTime");
 		Long end;
 		SqlSession session = sqlSessionFactory.openSession();
@@ -68,8 +69,8 @@ public class TracDao {
 		}finally{
 			session.close();
 		}
-		if(end == null){
-			return 0L;
+		if(end == null || end == 0L){
+			throw new MilestoneNotDefinedException("Milestoneの締め切りが登録されていません");
 		}else{
 			System.out.println("end:"+end);
 			return end.longValue();

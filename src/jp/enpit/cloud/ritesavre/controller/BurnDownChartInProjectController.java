@@ -55,17 +55,17 @@ public class BurnDownChartInProjectController {
 		long end = tDao.getDueTime(msf.getMilestone());
 		//milestoneのdueにまだなっていない場合は現在時刻をendとする
 		//Date.getTime()ではUnixtimeのミリ秒単位が返ってくるので、1000で割っておく
-		Date now = new Date();
-		if (now.getTime() / 1000 < end) {
-			end = now.getTime() / 1000;
-		}
+//		Date now = new Date();
+//		if (now.getTime() / 1000 < end) {
+//			end = now.getTime() / 1000;
+//		}
 		PointEntity e = new PointEntity(0, end);
 		bdc_entity.setIdealEndPoint(e);
 		int seffort = tDao.getDefaultInitialTaskEffort(msf.getMilestone(), ms.getMilestoneStart(),end,ms.getMember());
 		PointEntity s = new PointEntity(seffort, ms.getMilestoneStart());
 		bdc_entity.setIdealBeginPoint(s);
 
-		//mongodb.ritesavre.sbdchartに登録されている点(開始～終了の範囲で)をすべて取得する
+		//mongodb.ritesavre.sbdchartに登録されている点(開始～終了の範囲で)を取得する
 		SbdchartModel schart = new SbdchartModel();
 		ArrayList<PointEntity> a = schart.getActualPoints(ms);
 		bdc_entity.setActualPoints(a);
