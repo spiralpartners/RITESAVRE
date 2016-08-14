@@ -18,3 +18,8 @@ body {
 #mstone {
 	text-align: right;
 }
+
+#mstone a {
+	padding: .5em .75em;
+	border: 1px solid #ccc;
+}

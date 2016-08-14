@@ -13,16 +13,14 @@
 	<script type='text/javascript' src='dwr/engine.js'></script>
 	<script type='text/javascript' src='dwr/interface/BurnDownChartController.js'></script>
 	<script type='text/javascript' src='dwr/interface/BurnDownChartInProjectController.js'></script>
-
+	<script type="text/javascript" src="js/tem-utils.js"></script>
 	<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 </head>
 
 
 <body>
 	<div id="mstone">
-		<select id="mstone_menu">
-			<option value="">- milestone -</option>
-		</select>
+		<div id ="mstone_list">Milestone:</div>
 	</div>
     <div id="error_msg"></div>
     <div id="bd_chart"></div>
@@ -33,7 +31,6 @@
 	<script type='text/javascript'>
 
 	// プロジェクト名を定数化
-	//var project = 'trac_lego';
 	var project = 'trac_EventSpiral';
 	var a;
 
@@ -49,7 +46,6 @@
 		BurnDownChartInProjectController.execute(form, {
 			callback: function(bdc_data) {
 				$('#error_msg').text("");
-
 				var chart_data = createBdcData(bdc_data);
 
 				var chart = new google.visualization.ScatterChart(document.getElementById('bd_chart'));
@@ -102,31 +98,33 @@
 	function createMilestoneList() {
 		BurnDownChartController.listMilestones(project, {
 			callback: function(data) {
-				var buff = $('#mstone_menu').html();
+				var buff = $('#mstone_list').html();
 				for (var i=0; i<data.length; i++) {
-					buff += '<option value="' + data[i] + '">' + data[i] + '</option>';
+					buff += '<a href="' + getMyFileName() + '?' + 'ms=' + data[i] + '">' + data[i] + '</a>';
 				}
-				$('#mstone_menu').html(buff);
+				$('#mstone_list').html(buff);
 			},
 			exceptionHandler: updateErrorMsg
 		})
 	};
 
-	$('#mstone_menu').change(function() {
-		milestone = $(this).val();
-		drawChart(project, milestone);
-		stopTimer();
-		startTimer();
-	});
 
 	$(function() {
 		createMilestoneList();
+		if('ms' in getUrlVars()){
+			var milestone = getUrlVars()['ms'];
+			drawChart(project, milestone);
+			stopTimer();
+			startTimer();
+			//ToDo milestone listをmilestoneにあわせて更新する（色を変えるとか強調するとか）
+		}
+
 	});
 
 
 
-	//const REFRESH_INTERVAL = 10*60*1000; //10分間隔でグラフ更新
 	const REFRESH_INTERVAL = 5*60*1000; //5分間隔でグラフ更新
+	//const REFRESH_INTERVAL = 1*60*1000; //1分間隔でグラフ更新
 	const CHECK_INTERVAL = 1000;         //毎秒チェック
 	var refreshTimer;
 
@@ -134,7 +132,7 @@
 		var prev_updated = new Date();
 		refreshTimer = setInterval(function(){
 			var remain_ms = REFRESH_INTERVAL - (new Date() - prev_updated);
-			var milestone = $('#mstone_menu option:selected').val();
+			var milestone = getUrlVars()['ms'];
 			if (remain_ms < 0) {
 				prev_updated = new Date();
 				drawChart(project, milestone);
